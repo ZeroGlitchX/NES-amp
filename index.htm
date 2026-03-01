@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>NESamp — Chiptune Player</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,6 +46,11 @@
 
     --radius: 6px;
     --radius-lg: 10px;
+
+    --safe-top:    env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left:   env(safe-area-inset-left, 0px);
+    --safe-right:  env(safe-area-inset-right, 0px);
 }
 
 html, body {
@@ -55,6 +60,19 @@ html, body {
     color: var(--text-primary);
     font-family: var(--font-mono);
     -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+}
+
+/* Touch optimizations */
+.ctrl-btn, .play-btn, .vol-btn, .game-card, .track-row, .load-btn {
+    touch-action: manipulation;
+}
+.progress-track, .volume-track {
+    touch-action: none;
+}
+.player-bar, .controls {
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 ::-webkit-scrollbar { width: 6px; }
@@ -597,7 +615,7 @@ html, body {
     height: 100%;
     background: var(--text-secondary);
     border-radius: 2px;
-    width: 75%;
+    width: 50%;
     transition: width 0.05s;
 }
 .volume-track:hover .volume-fill { background: var(--nes-cyan); }
@@ -667,7 +685,8 @@ html, body {
     .game-title { font-size: 9px; }
     .viz-wrap { width: 120px; max-width: 120px; flex-shrink: 0; }
     #visualizer { height: 48px; }
-    .volume-section { display: none; }
+    .volume-track { display: none; }
+    .volume-section { width: auto; }
     .player-bar { padding: 0 16px; gap: 12px; }
     .library-section { padding: 12px 16px 0; }
     .tracklist-section { padding: 12px 16px 0; }
@@ -675,15 +694,72 @@ html, body {
 
 @media (max-width: 540px) {
     .viz-wrap { display: none; }
-    .sidebar { padding: 12px 16px; }
-    .album-art-wrap { width: 72px; max-width: 72px; }
+    .sidebar { padding: 12px 16px; padding-left: calc(16px + var(--safe-left)); padding-right: calc(16px + var(--safe-right)); }
+    .album-art-wrap { width: 56px; max-width: 56px; }
     .game-title { font-size: 8px; }
     .artist { font-size: 12px; }
     .copyright { display: none; }
-    .controls { gap: 2px; }
-    .ctrl-btn { width: 30px; height: 30px; }
-    .play-btn { width: 40px; height: 40px; }
+
+    /* Header safe areas */
+    .header { padding-left: calc(20px + var(--safe-left)); padding-right: calc(20px + var(--safe-right)); height: 44px; }
+    .logo { font-size: 12px; }
+    .logo span { font-size: 12px; }
+    .load-btn { font-size: 8px; padding: 6px 12px; }
+
+    /* Library */
+    .library-section { padding-left: calc(12px + var(--safe-left)); padding-right: calc(12px + var(--safe-right)); }
+    .game-card { width: 110px; }
+
+    /* Tracklist */
+    .tracklist-section { padding-left: calc(12px + var(--safe-left)); padding-right: calc(12px + var(--safe-right)); }
+    .track-row { padding: 14px 12px; min-height: 48px; }
+
+    /* Player bar — two-row layout */
+    .player-bar {
+        flex-wrap: wrap;
+        padding: 8px 16px calc(8px + var(--safe-bottom));
+        padding-left: calc(16px + var(--safe-left));
+        padding-right: calc(16px + var(--safe-right));
+        gap: 6px;
+        height: auto;
+        grid-area: player;
+    }
+    .app {
+        grid-template-rows: 44px auto 1fr auto;
+    }
+    .progress-section {
+        order: -1;
+        flex-basis: 100%;
+        gap: 8px;
+    }
     .time-label { font-size: 10px; width: 34px; }
+    .controls {
+        gap: 4px;
+        flex: 1;
+        justify-content: center;
+    }
+
+    /* 44px+ touch targets */
+    .ctrl-btn { width: 44px; height: 44px; }
+    .ctrl-btn svg { width: 20px; height: 20px; }
+    .play-btn { width: 52px; height: 52px; }
+    .play-btn svg { width: 24px; height: 24px; }
+    .vol-btn { width: 44px; height: 44px; }
+    .vol-btn svg { width: 20px; height: 20px; }
+
+    /* Progress bar: thicker for touch + always-visible knob */
+    .progress-track {
+        height: 6px;
+        padding: 15px 0;
+        margin: -15px 0;
+        background-clip: content-box;
+    }
+    .progress-track:hover { height: 6px; margin: -15px 0; }
+    .progress-fill { box-shadow: none; }
+    .progress-knob { opacity: 1; width: 16px; height: 16px; right: -8px; }
+
+    /* Volume mute button */
+    .volume-section { order: 1; }
 }
 </style>
 </head>
@@ -1056,7 +1132,7 @@ const state = {
     isPlaying: false,
     shuffle: false,
     repeat: 'none',  // none | all | one
-    volume: 0.75,
+    volume: 0.50,
     muted: false,
     elapsed: 0,
     playInterval: null,
@@ -1390,6 +1466,17 @@ function seek(ratio) {
     const dur = parseTime(track().time);
     state.elapsed = ratio * dur;
     updateProgress();
+    // Actually seek the engine
+    if (game().isNSF && engine.isActive()) {
+        engine.seekTo(state.elapsed);
+    }
+}
+
+// Preview-only seek (visual update, no engine seek) for drag
+function seekPreview(ratio) {
+    const dur = parseTime(track().time);
+    state.elapsed = ratio * dur;
+    updateProgress();
 }
 
 /* ═══════════════════════════════════════════════
@@ -1488,41 +1575,97 @@ dom.libraryStrip.addEventListener('click', (e) => {
     if (card) selectGame(parseInt(card.dataset.game));
 });
 
-// Progress bar seeking
-function handleProgressInteraction(e) {
-    const rect = dom.progressTrack.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    seek(ratio);
+// Unified pointer helper — reads clientX from mouse or touch events
+function getPointerX(e) {
+    if (e.touches && e.touches.length > 0) return e.touches[0].clientX;
+    if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0].clientX;
+    return e.clientX;
 }
-dom.progressTrack.addEventListener('click', handleProgressInteraction);
-dom.progressTrack.addEventListener('mousedown', (e) => {
-    handleProgressInteraction(e);
-    const onMove = (ev) => handleProgressInteraction(ev);
-    const onUp = () => {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-    };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-});
+
+// Wire both mouse + touch drag on an element, calling handler(e) on start/move
+function addDragListeners(element, handler) {
+    // Mouse
+    element.addEventListener('mousedown', (e) => {
+        handler(e);
+        const onMove = (ev) => handler(ev);
+        const onUp = () => {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    });
+    // Touch
+    element.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handler(e);
+        const onMove = (ev) => { ev.preventDefault(); handler(ev); };
+        const onEnd = () => {
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+            document.removeEventListener('touchcancel', onEnd);
+        };
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
+        document.addEventListener('touchcancel', onEnd);
+    }, { passive: false });
+}
+
+// Progress bar seeking — preview during drag, seek on release
+let _progressDragRatio = -1;
+
+function handleProgressPreview(e) {
+    const rect = dom.progressTrack.getBoundingClientRect();
+    _progressDragRatio = Math.max(0, Math.min(1, (getPointerX(e) - rect.left) / rect.width));
+    seekPreview(_progressDragRatio);
+}
+
+function handleProgressCommit() {
+    if (_progressDragRatio >= 0) {
+        seek(_progressDragRatio);
+        _progressDragRatio = -1;
+    }
+}
+
+// Wire progress drag with preview on move, seek on release
+(function() {
+    const el = dom.progressTrack;
+    // Mouse
+    el.addEventListener('mousedown', (e) => {
+        handleProgressPreview(e);
+        const onMove = (ev) => handleProgressPreview(ev);
+        const onUp = () => {
+            handleProgressCommit();
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    });
+    // Touch
+    el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleProgressPreview(e);
+        const onMove = (ev) => { ev.preventDefault(); handleProgressPreview(ev); };
+        const onEnd = () => {
+            handleProgressCommit();
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+            document.removeEventListener('touchcancel', onEnd);
+        };
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
+        document.addEventListener('touchcancel', onEnd);
+    }, { passive: false });
+})();
 
 // Volume bar
 function handleVolumeInteraction(e) {
     const rect = dom.volumeTrack.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const ratio = Math.max(0, Math.min(1, (getPointerX(e) - rect.left) / rect.width));
     setVolume(ratio);
 }
-dom.volumeTrack.addEventListener('click', handleVolumeInteraction);
-dom.volumeTrack.addEventListener('mousedown', (e) => {
-    handleVolumeInteraction(e);
-    const onMove = (ev) => handleVolumeInteraction(ev);
-    const onUp = () => {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-    };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-});
+addDragListeners(dom.volumeTrack, handleVolumeInteraction);
 
 // Drag & drop
 let dragCounter = 0;
@@ -1569,11 +1712,25 @@ document.addEventListener('keydown', (e) => {
 /* ═══════════════════════════════════════════════
    INIT
    ═══════════════════════════════════════════════ */
+function resizeVisualizer() {
+    const canvas = dom.visualizer;
+    const parent = canvas.parentElement;
+    if (!parent) return;
+    const w = parent.clientWidth;
+    const h = parent.clientHeight || 72;
+    if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+    }
+}
+window.addEventListener('resize', resizeVisualizer);
+
 function init() {
     renderLibrary();
     renderTrackList();
     updateNowPlaying();
     setVolume(state.volume);
+    resizeVisualizer();
     vizTick();
 }
 
