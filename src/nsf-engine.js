@@ -79,14 +79,37 @@ class NSFEngine {
         this.sampleRate = this.audioCtx.sampleRate;
         this.cyclesPerSample = CPU_FREQ_NTSC / this.sampleRate;
 
+        // NES hardware output filter chain:
+        //   source → highpass 37Hz → highpass 440Hz → lowpass 14kHz → gain → dest
+        const hp1 = this.audioCtx.createBiquadFilter();
+        hp1.type = 'highpass';
+        hp1.frequency.value = 37;
+        hp1.Q.value = 0.707;
+
+        const hp2 = this.audioCtx.createBiquadFilter();
+        hp2.type = 'highpass';
+        hp2.frequency.value = 440;
+        hp2.Q.value = 0.707;
+
+        const lp = this.audioCtx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.value = 14000;
+        lp.Q.value = 0.707;
+
         this.gainNode = this.audioCtx.createGain();
+
+        // Wire chain: source → hp1 → hp2 → lp → gain → destination
+        hp1.connect(hp2);
+        hp2.connect(lp);
+        lp.connect(this.gainNode);
         this.gainNode.connect(this.audioCtx.destination);
+        this._filterInput = hp1; // audio source connects here
 
         // Try AudioWorklet first
         try {
             await this.audioCtx.audioWorklet.addModule('src/audio-worklet.js');
             this.workletNode = new AudioWorkletNode(this.audioCtx, 'nsf-processor');
-            this.workletNode.connect(this.gainNode);
+            this.workletNode.connect(this._filterInput);
             this.workletNode.port.onmessage = (e) => {
                 if (e.data.type === 'status') {
                     this.workletQueueSize = e.data.queueSize;
@@ -142,6 +165,7 @@ class NSFEngine {
 
         // Reset cycle tracking for play routine
         this._nextPlayCycle = this.cpu.cycles + this.cyclesPerPlayCall;
+        this._sampleTarget = this.cpu.cycles; // absolute cycle target
     }
 
     // ── Generate audio samples ──
@@ -151,9 +175,11 @@ class NSFEngine {
             const wholeCycles = Math.floor(this.cycleRemainder);
             this.cycleRemainder -= wholeCycles;
 
-            const targetCycles = this.cpu.cycles + wholeCycles;
+            // Absolute target — CPU overshoot from previous sample is
+            // automatically compensated instead of accumulating (~2.7% drift)
+            this._sampleTarget += wholeCycles;
 
-            while (this.cpu.cycles < targetCycles) {
+            while (this.cpu.cycles < this._sampleTarget) {
                 // Call play routine at the correct rate (inline JSR so
                 // the play routine executes step-by-step with APU clocking)
                 if (this.cpu.cycles >= this._nextPlayCycle) {
@@ -231,6 +257,42 @@ class NSFEngine {
         return this.samplesGenerated / this.sampleRate;
     }
 
+    // ── Seek to a specific time (seconds) ──
+    // Re-inits the track and fast-forwards the emulator to the target frame.
+    seekTo(seconds) {
+        if (!this.nsf) return;
+        const wasPlaying = this.playing;
+        this.pause();
+        if (this.workletNode) {
+            this.workletNode.port.postMessage({ type: 'stop' });
+        }
+
+        // Re-init from scratch
+        this.initTrack(this.currentSong);
+
+        // Run play routine at ~60Hz to fast-forward
+        const targetFrames = Math.floor(seconds * CPU_FREQ_NTSC / this.cyclesPerPlayCall);
+        for (let f = 0; f < targetFrames; f++) {
+            this.cpu.jsr(this.nsf.playAddress);
+            const playStart = this.cpu.cycles;
+            while (this.cpu.pc !== 0x5FFC && (this.cpu.cycles - playStart) < 200000) {
+                const prev = this.cpu.cycles;
+                this.cpu.step();
+                this.apu.clock(this.cpu.cycles - prev);
+            }
+            const playCycles = this.cpu.cycles - playStart;
+            const remaining = this.cyclesPerPlayCall - playCycles;
+            if (remaining > 0) this.apu.fastForward(remaining);
+        }
+
+        // Sync sample tracking to match the target time
+        this.samplesGenerated = Math.floor(seconds * this.sampleRate);
+        this._sampleTarget = this.cpu.cycles;
+        this._nextPlayCycle = this.cpu.cycles + this.cyclesPerPlayCall;
+
+        if (wasPlaying) this.play();
+    }
+
     getChannelOutputs() {
         if (!this.apu) return { pulse1: 0, pulse2: 0, triangle: 0, noise: 0, dmc: 0 };
         return this.apu.getChannelOutputs();
@@ -291,7 +353,7 @@ class NSFEngine {
             const output = e.outputBuffer.getChannelData(0);
             this._generateSamples(output, output.length);
         };
-        this.scriptNode.connect(this.gainNode);
+        this.scriptNode.connect(this._filterInput || this.gainNode);
     }
 
     _stopScriptProcessor() {
