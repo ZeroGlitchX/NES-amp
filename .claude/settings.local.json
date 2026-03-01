@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.nesdev.org)",
+      "WebFetch(domain:nesdev.org)",
+      "WebFetch(domain:github.com/SourMesen)",
+      "WebFetch(domain:www.masswerk.at)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -sk 'http://onakasuita.org/jsgme/')"
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
+  }
+}
