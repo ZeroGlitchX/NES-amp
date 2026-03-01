@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NESamp — Chiptune Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   RESET & CUSTOM PROPERTIES
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg-void:     #06060c;
+    --bg-deep:     #0a0a12;
+    --bg-dark:     #10101e;
+    --bg-surface:  #16162a;
+    --bg-card:     #1c1c34;
+    --bg-hover:    #24243e;
+    --border:      #2a2a48;
+    --border-lit:  #3a3a58;
+
+    --nes-red:     #E40058;
+    --nes-blue:    #0058F8;
+    --nes-cyan:    #00E8D8;
+    --nes-green:   #00A800;
+    --nes-yellow:  #F8D878;
+    --nes-gold:    #F8B800;
+    --nes-orange:  #E45C10;
+    --nes-purple:  #7800AC;
+    --nes-pink:    #F878F8;
+    --nes-white:   #FCFCFC;
+
+    --text-primary:   #d8d8ee;
+    --text-secondary: #8888aa;
+    --text-dim:       #555572;
+
+    --accent:       var(--nes-red);
+    --accent-glow:  rgba(228, 0, 88, 0.35);
+
+    --font-pixel: 'Press Start 2P', monospace;
+    --font-mono:  'Share Tech Mono', 'Courier New', monospace;
+
+    --radius: 6px;
+    --radius-lg: 10px;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-lit); }
+
+/* ═══════════════════════════════════════════════
+   APP LAYOUT
+   ═══════════════════════════════════════════════ */
+.app {
+    display: grid;
+    grid-template-rows: 52px 1fr 84px;
+    grid-template-columns: 320px 1fr;
+    grid-template-areas:
+        "header  header"
+        "sidebar main"
+        "player  player";
+    height: 100vh;
+    position: relative;
+}
+
+/* ═══════════════════════════════════════════════
+   CRT ATMOSPHERE
+   ═══════════════════════════════════════════════ */
+.app::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(0,0,0,0.45) 100%);
+    pointer-events: none;
+    z-index: 900;
+}
+.app::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.06) 0px,
+        rgba(0,0,0,0.06) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+    z-index: 901;
+}
+
+/* ═══════════════════════════════════════════════
+   BOOT SCREEN
+   ═══════════════════════════════════════════════ */
+.boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: bootOut 0.6s ease-in 2.4s forwards;
+}
+.boot-flash {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+    animation: flashPulse 0.15s ease-out 0.3s forwards;
+}
+@keyframes flashPulse {
+    0%   { opacity: 0; }
+    30%  { opacity: 0.7; }
+    100% { opacity: 0; }
+}
+.boot-logo {
+    font-family: var(--font-pixel);
+    font-size: 28px;
+    color: var(--nes-red);
+    opacity: 0;
+    animation: logoIn 0.4s ease-out 0.6s forwards;
+    text-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(228,0,88,0.15);
+    letter-spacing: 4px;
+}
+.boot-logo span { color: var(--text-primary); }
+.boot-sub {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 16px;
+    opacity: 0;
+    animation: logoIn 0.4s ease-out 1.2s forwards;
+    letter-spacing: 3px;
+}
+@keyframes logoIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes bootOut {
+    to { opacity: 0; pointer-events: none; visibility: hidden; }
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════ */
+.header {
+    grid-area: header;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--border);
+    z-index: 10;
+    gap: 16px;
+}
+.logo {
+    font-family: var(--font-pixel);
+    font-size: 14px;
+    color: var(--nes-red);
+    letter-spacing: 2px;
+    flex-shrink: 0;
+    text-shadow: 0 0 12px var(--accent-glow);
+}
+.logo span { color: var(--text-primary); font-size: 14px; }
+.header-spacer { flex: 1; }
+.load-btn {
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+}
+.load-btn:hover {
+    color: var(--nes-cyan);
+    border-color: var(--nes-cyan);
+    box-shadow: 0 0 12px rgba(0,232,216,0.15);
+}
+#fileInput { display: none; }
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR — NOW PLAYING
+   ═══════════════════════════════════════════════ */
+.sidebar {
+    grid-area: sidebar;
+    background: var(--bg-dark);
+    border-right: 1px solid var(--border);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+/* Album Art */
+.album-art-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 280px;
+    margin: 0 auto;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow:
+        0 4px 24px rgba(0,0,0,0.5),
+        0 0 0 1px var(--border);
+}
+.album-art-wrap.playing::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--nes-red);
+    box-shadow: 0 0 20px var(--accent-glow), inset 0 0 20px rgba(228,0,88,0.08);
+    animation: artPulse 2s ease-in-out infinite;
+}
+@keyframes artPulse {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+}
+#artCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Metadata */
+.meta {
+    text-align: center;
+}
+.game-title {
+    font-family: var(--font-pixel);
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+.artist {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+.copyright {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+}
+.track-counter {
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    color: var(--nes-cyan);
+    letter-spacing: 1px;
+}
+
+/* Visualizer */
+.viz-wrap {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    background: var(--bg-void);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+}
+#visualizer {
+    display: block;
+    width: 100%;
+    height: 72px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN — LIBRARY & TRACKLIST
+   ═══════════════════════════════════════════════ */
+.main-content {
+    grid-area: main;
+    background: var(--bg-deep);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Library Strip */
+.library-section {
+    padding: 20px 24px 0;
+    flex-shrink: 0;
+}
+.section-label {
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+.library-strip {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    scroll-snap-type: x mandatory;
+}
+.game-card {
+    flex-shrink: 0;
+    width: 130px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    scroll-snap-align: start;
+}
+.game-card:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-lit);
+    transform: translateY(-2px);
+}
+.game-card.active {
+    border-color: var(--nes-red);
+    background: rgba(228,0,88,0.06);
+    box-shadow: 0 0 16px rgba(228,0,88,0.1);
+}
+.game-card-art {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    background: var(--bg-dark);
+}
+.game-card-art canvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+.game-card-title {
+    font-family: var(--font-pixel);
+    font-size: 7px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.game-card.active .game-card-title { color: var(--text-primary); }
+
+/* Tracklist */
+.tracklist-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 16px 24px 0;
+}
+.tracklist-header {
+    display: grid;
+    grid-template-columns: 42px 1fr 54px;
+    padding: 0 12px 10px;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+.tracks-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0 20px;
+}
+.track-row {
+    display: grid;
+    grid-template-columns: 42px 1fr 54px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+}
+.track-row:hover { background: var(--bg-hover); }
+.track-row.active {
+    background: rgba(228,0,88,0.08);
+}
+.track-row.active .track-num { color: var(--nes-red); }
+.track-row.active .track-name { color: var(--nes-white); }
+.track-num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+}
+.track-playing-icon {
+    display: none;
+}
+.track-row.active.is-playing .track-num { display: none; }
+.track-row.active.is-playing .track-playing-icon {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 14px;
+}
+.eq-bar {
+    width: 3px;
+    background: var(--nes-red);
+    border-radius: 1px;
+    animation: eqBounce 0.8s ease-in-out infinite alternate;
+}
+.eq-bar:nth-child(1) { height: 60%; animation-delay: 0s; }
+.eq-bar:nth-child(2) { height: 100%; animation-delay: 0.2s; }
+.eq-bar:nth-child(3) { height: 40%; animation-delay: 0.4s; }
+.eq-bar:nth-child(4) { height: 80%; animation-delay: 0.1s; }
+@keyframes eqBounce {
+    from { transform: scaleY(0.3); }
+    to   { transform: scaleY(1); }
+}
+.track-name {
+    font-size: 14px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 12px;
+}
+.track-time {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════
+   PLAYER BAR
+   ═══════════════════════════════════════════════ */
+.player-bar {
+    grid-area: player;
+    background: var(--bg-dark);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 20px;
+    z-index: 10;
+}
+
+/* Transport Controls */
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.ctrl-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+    position: relative;
+}
+.ctrl-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.ctrl-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
+.ctrl-btn:active { transform: scale(0.92); }
+.ctrl-btn.active { color: var(--nes-cyan); }
+.ctrl-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--nes-cyan);
+    border-radius: 50%;
+}
+
+.play-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--nes-red);
+    color: #fff !important;
+    border-radius: 50%;
+    box-shadow: 0 2px 12px var(--accent-glow);
+    transition: all 0.2s;
+}
+.play-btn:hover {
+    background: #ff1a6c;
+    box-shadow: 0 4px 20px var(--accent-glow);
+    transform: scale(1.06);
+}
+.play-btn:active { transform: scale(0.95) !important; }
+.play-btn svg { width: 20px; height: 20px; }
+
+/* Progress */
+.progress-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+.time-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-card);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+}
+.progress-track:hover { height: 8px; margin: -1px 0; }
+.progress-fill {
+    height: 100%;
+    background: var(--nes-red);
+    border-radius: 3px;
+    width: 0%;
+    position: relative;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+.progress-track:hover .progress-knob { opacity: 1; }
+.progress-knob {
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: var(--nes-white);
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+/* Volume */
+.volume-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    width: 140px;
+}
+.vol-btn {
+    width: 32px;
+    height: 32px;
+}
+.vol-btn svg { width: 16px; height: 16px; }
+.volume-track {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-card);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+}
+.volume-track:hover { height: 6px; margin: -1px 0; }
+.volume-fill {
+    height: 100%;
+    background: var(--text-secondary);
+    border-radius: 2px;
+    width: 75%;
+    transition: width 0.05s;
+}
+.volume-track:hover .volume-fill { background: var(--nes-cyan); }
+
+/* ═══════════════════════════════════════════════
+   DROP ZONE OVERLAY
+   ═══════════════════════════════════════════════ */
+.drop-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6,6,12,0.92);
+    z-index: 800;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.drop-overlay.visible { display: flex; }
+.drop-box {
+    border: 3px dashed var(--nes-cyan);
+    border-radius: var(--radius-lg);
+    padding: 60px 80px;
+    text-align: center;
+    animation: dropPulse 1.2s ease-in-out infinite;
+}
+@keyframes dropPulse {
+    0%, 100% { border-color: var(--nes-cyan); box-shadow: 0 0 30px rgba(0,232,216,0.1); }
+    50%      { border-color: var(--nes-green); box-shadow: 0 0 40px rgba(0,168,0,0.15); }
+}
+.drop-icon {
+    font-family: var(--font-pixel);
+    font-size: 36px;
+    color: var(--nes-cyan);
+    margin-bottom: 16px;
+}
+.drop-text {
+    font-family: var(--font-pixel);
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 860px) {
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 48px auto 1fr 80px;
+        grid-template-areas:
+            "header"
+            "sidebar"
+            "main"
+            "player";
+    }
+    .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        align-items: center;
+        padding: 16px 20px;
+        gap: 16px;
+        overflow-x: auto;
+    }
+    .album-art-wrap { width: 100px; max-width: 100px; flex-shrink: 0; }
+    .meta { text-align: left; flex: 1; min-width: 0; }
+    .game-title { font-size: 9px; }
+    .viz-wrap { width: 120px; max-width: 120px; flex-shrink: 0; }
+    #visualizer { height: 48px; }
+    .volume-section { display: none; }
+    .player-bar { padding: 0 16px; gap: 12px; }
+    .library-section { padding: 12px 16px 0; }
+    .tracklist-section { padding: 12px 16px 0; }
+}
+
+@media (max-width: 540px) {
+    .viz-wrap { display: none; }
+    .sidebar { padding: 12px 16px; }
+    .album-art-wrap { width: 72px; max-width: 72px; }
+    .game-title { font-size: 8px; }
+    .artist { font-size: 12px; }
+    .copyright { display: none; }
+    .controls { gap: 2px; }
+    .ctrl-btn { width: 30px; height: 30px; }
+    .play-btn { width: 40px; height: 40px; }
+    .time-label { font-size: 10px; width: 34px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Boot Sequence -->
+<div class="boot-screen" id="bootScreen">
+    <div class="boot-flash"></div>
+    <div class="boot-logo">NES<span>amp</span></div>
+    <div class="boot-sub">CHIPTUNE PLAYER</div>
+</div>
+
+<div class="app">
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">NES<span>amp</span></div>
+        <div class="header-spacer"></div>
+        <button class="load-btn" id="loadBtn">LOAD NSF</button>
+        <input type="file" id="fileInput" accept=".nsf,.nsfe">
+    </header>
+
+    <!-- Sidebar: Now Playing -->
+    <aside class="sidebar">
+        <div class="album-art-wrap" id="albumWrap">
+            <canvas id="artCanvas" width="128" height="128"></canvas>
+        </div>
+        <div class="meta">
+            <h2 class="game-title" id="gameTitle">—</h2>
+            <p class="artist" id="artistName">—</p>
+            <p class="copyright" id="copyright"></p>
+            <p class="track-counter" id="trackCounter">— / —</p>
+        </div>
+        <div class="viz-wrap">
+            <canvas id="visualizer" width="280" height="72"></canvas>
+        </div>
+    </aside>
+
+    <!-- Main: Library + Tracks -->
+    <section class="main-content">
+        <div class="library-section">
+            <div class="section-label">LIBRARY</div>
+            <div class="library-strip" id="libraryStrip"></div>
+        </div>
+        <div class="tracklist-section">
+            <div class="section-label">TRACKLIST</div>
+            <div class="tracklist-header">
+                <span>#</span>
+                <span>TITLE</span>
+                <span style="text-align:right">TIME</span>
+            </div>
+            <div class="tracks-scroll" id="trackList"></div>
+        </div>
+    </section>
+
+    <!-- Player Bar -->
+    <footer class="player-bar">
+        <div class="controls">
+            <button class="ctrl-btn" id="shuffleBtn" title="Shuffle">
+                <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="prevBtn" title="Previous Track">
+                <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <button class="ctrl-btn play-btn" id="playBtn" title="Play">
+                <svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="stopBtn" title="Stop">
+                <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="nextBtn" title="Next Track">
+                <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+            <button class="ctrl-btn" id="repeatBtn" title="Repeat">
+                <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+            </button>
+        </div>
+
+        <div class="progress-section">
+            <span class="time-label" id="elapsed">0:00</span>
+            <div class="progress-track" id="progressTrack">
+                <div class="progress-fill" id="progressFill">
+                    <div class="progress-knob"></div>
+                </div>
+            </div>
+            <span class="time-label" id="duration">0:00</span>
+        </div>
+
+        <div class="volume-section">
+            <button class="ctrl-btn vol-btn" id="muteBtn" title="Volume">
+                <svg viewBox="0 0 24 24" id="volIcon"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </button>
+            <div class="volume-track" id="volumeTrack">
+                <div class="volume-fill" id="volumeFill"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Drop Zone -->
+    <div class="drop-overlay" id="dropOverlay">
+        <div class="drop-box">
+            <div class="drop-icon">&#9654;</div>
+            <div class="drop-text">INSERT CARTRIDGE</div>
+            <div class="drop-text" style="margin-top:8px;font-size:8px;color:var(--text-dim)">.NSF FILE</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- NSF Engine -->
+<script src="src/nsf-parser.js"></script>
+<script src="src/cpu6502.js"></script>
+<script src="src/apu.js"></script>
+<script src="src/memory.js"></script>
+<script src="src/nsf-engine.js"></script>
+<script src="src/games-library.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════
+   NSF ENGINE INSTANCE
+   ═══════════════════════════════════════════════ */
+const engine = new NSFEngine();
+let engineLoadedIdx = -1; // Which GAMES index the engine currently holds
+
+// Lazy-load an NSF file for a preset game entry
+async function ensureLoaded(idx) {
+    const g = GAMES[idx];
+    if (g.isNSF && engineLoadedIdx === idx) return true;
+    if (!g.file) return false;
+    try {
+        let arrayBuffer;
+        if (g._nsfBuffer) {
+            arrayBuffer = g._nsfBuffer;
+        } else {
+            const resp = await fetch(g.file);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            arrayBuffer = await resp.arrayBuffer();
+            g._nsfBuffer = arrayBuffer;
+        }
+        const meta = await engine.loadFile(arrayBuffer);
+        g.isNSF = true;
+        engineLoadedIdx = idx;
+        // Update metadata from NSF header
+        if (meta.artist) g.artist = meta.artist;
+        if (meta.copyright) g.copyright = meta.copyright;
+        if (meta.title) g.title = meta.title;
+        reconcileTracks(g, meta.totalSongs);
+        // Scan track durations in the background (non-blocking)
+        if (!g._scanned) {
+            g._scanned = true;
+            scanTrackDurations(g).catch(err =>
+                console.warn(`Duration scan failed for "${g.title}":`, err)
+            );
+        }
+        return true;
+    } catch (err) {
+        console.error(`Failed to load NSF for "${g.title}":`, err);
+        return false;
+    }
+}
+
+// Pad or truncate curated track list to match real NSF track count
+function reconcileTracks(game, realCount) {
+    if (realCount > game.tracks.length) {
+        for (let i = game.tracks.length; i < realCount; i++) {
+            game.tracks.push({ name: `Track ${String(i + 1).padStart(2, '0')}`, time: '3:00' });
+        }
+    } else if (realCount < game.tracks.length) {
+        game.tracks.length = realCount;
+    }
+}
+
+// ── Silence-detection track duration scanner ──
+// Runs emulator non-realtime in a separate CPU/APU/Memory set.
+// For each track: executes play routine at 60Hz, fast-forwards APU between calls,
+// and detects when all channels go silent for ~2 seconds.
+async function scanTrackDurations(game) {
+    if (!game._nsfBuffer) return;
+
+    const nsf = parseNSF(game._nsfBuffer);
+    const cyclesPerPlay = nsf.ntscSpeed > 0
+        ? Math.round(1789773 * nsf.ntscSpeed / 1000000)
+        : 29781;
+
+    const SILENCE_FRAMES = 120;  // ~2 seconds at 60Hz
+    const MAX_FRAMES = 300 * 60; // 5 minutes scan limit
+    const YIELD_INTERVAL = 120;  // yield to UI every 2 seconds of sim time
+
+    for (let t = 0; t < game.tracks.length; t++) {
+        // Create isolated emulator instances
+        const scanApu = new APU();
+        const scanMem = new Memory();
+        scanMem.apu = scanApu;
+        scanApu.memory = scanMem;
+        const scanCpu = new CPU6502(scanMem);
+
+        // Init the track (mirrors nsf-engine.initTrack)
+        scanMem.reset();
+        scanMem.loadNSF(nsf);
+        scanApu.reset();
+        for (let a = 0x4000; a <= 0x4013; a++) scanApu.writeRegister(a, 0x00);
+        scanApu.writeRegister(0x4015, 0x00);
+        scanApu.writeRegister(0x4015, 0x0F);
+        scanApu.writeRegister(0x4017, 0x40);
+
+        if (nsf.hasBankswitching) {
+            for (let i = 0; i < 8; i++) scanMem.write(0x5FF8 + i, nsf.bankswitch[i]);
+        }
+
+        scanCpu.reset();
+        scanCpu.a = t;
+        scanCpu.x = 0;
+        scanCpu.sp = 0xFF;
+        scanCpu.jsr(nsf.initAddress);
+        scanCpu.runUntilReturn(2000000);
+
+        let silentFrames = 0;
+        let totalFrames = 0;
+        let lastActiveFrame = 0;
+
+        while (totalFrames < MAX_FRAMES) {
+            // Call play routine
+            scanCpu.jsr(nsf.playAddress);
+            const playStart = scanCpu.cycles;
+
+            // Step CPU + clock APU through play routine until return to sentinel
+            while (scanCpu.pc !== 0x5FFC && (scanCpu.cycles - playStart) < 200000) {
+                const prev = scanCpu.cycles;
+                scanCpu.step();
+                scanApu.clock(scanCpu.cycles - prev);
+            }
+
+            // Fast-forward APU for remaining frame time
+            const playCycles = scanCpu.cycles - playStart;
+            const remaining = cyclesPerPlay - playCycles;
+            if (remaining > 0) scanApu.fastForward(remaining);
+
+            totalFrames++;
+
+            // Check channel activity
+            if (scanApu.isChannelActive()) {
+                silentFrames = 0;
+                lastActiveFrame = totalFrames;
+            } else {
+                silentFrames++;
+            }
+
+            // Silence detected — track is done
+            if (silentFrames >= SILENCE_FRAMES) break;
+
+            // Yield to UI periodically
+            if (totalFrames % YIELD_INTERVAL === 0) {
+                await new Promise(r => setTimeout(r, 0));
+            }
+        }
+
+        // Only update duration if silence was actually detected
+        // (looping tracks keep their existing curated/default time)
+        if (silentFrames >= SILENCE_FRAMES) {
+            const durationSec = Math.max(1, Math.ceil(lastActiveFrame / 60));
+            const mins = Math.floor(durationSec / 60);
+            const secs = durationSec % 60;
+            game.tracks[t].time = `${mins}:${secs.toString().padStart(2, '0')}`;
+            game.tracks[t]._detected = true;
+
+            // Update the track list UI
+            if (state.currentGame === GAMES.indexOf(game)) {
+                renderTrackList();
+            }
+        }
+
+        // Brief yield between tracks
+        await new Promise(r => setTimeout(r, 0));
+    }
+}
+
+// Hash a string to a seed number for pixel art
+function hashString(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+        h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+    }
+    return Math.abs(h);
+}
+
+// Generate a color palette from a title string
+function colorsFromTitle(title) {
+    const NES_COLORS = [
+        '#E40058','#0058F8','#00E8D8','#00A800','#F8D800',
+        '#E45C10','#7800AC','#F878F8','#FCFCFC'
+    ];
+    const seed = hashString(title);
+    const pick = (n) => NES_COLORS[(seed * (n + 1) * 7 + n * 13) % NES_COLORS.length];
+    return ['#0a0a1a', pick(0), pick(1), pick(2), pick(3)];
+}
+
+// Load an NSF file into the player
+async function loadNSFFile(arrayBuffer) {
+    try {
+        const meta = await engine.loadFile(arrayBuffer);
+
+        // Create a game entry for the library
+        const gameEntry = {
+            title: meta.title || 'Unknown',
+            artist: meta.artist || 'Unknown',
+            copyright: meta.copyright || '',
+            colors: colorsFromTitle(meta.title),
+            seed: hashString(meta.title),
+            tracks: Array.from({length: meta.totalSongs}, (_, i) => ({
+                name: `Track ${String(i + 1).padStart(2, '0')}`,
+                time: '3:00'
+            })),
+            isNSF: true,
+            _nsfBuffer: arrayBuffer
+        };
+
+        GAMES.push(gameEntry);
+        const idx = GAMES.length - 1;
+        engineLoadedIdx = idx;
+        selectGame(idx);
+
+        // Scan durations in background
+        gameEntry._scanned = true;
+        scanTrackDurations(gameEntry).catch(err =>
+            console.warn('Duration scan failed:', err)
+        );
+
+    } catch (err) {
+        console.error('Failed to load NSF:', err);
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   LIBRARY → GAME ENTRIES (random pick each load)
+   ═══════════════════════════════════════════════ */
+const LIBRARY_CARD_COUNT = 12;
+
+// Build a GAMES entry from a library record
+function libraryToGame(entry) {
+    return {
+        title: entry.title,
+        artist: entry.publisher,
+        copyright: entry.region === 'Famicom' ? 'Famicom' : 'NES',
+        colors: colorsFromTitle(entry.title),
+        seed: hashString(entry.title),
+        file: entry.file,
+        tracks: [{ name: 'Track 01', time: '3:00' }],
+        isNSF: false,
+    };
+}
+
+// Fisher-Yates shuffle
+function shuffleArray(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+const GAMES = shuffleArray(NSF_LIBRARY).slice(0, LIBRARY_CARD_COUNT).map(libraryToGame);
+
+/* ═══════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════ */
+const state = {
+    currentGame: 0,
+    currentTrack: 0,
+    isPlaying: false,
+    shuffle: false,
+    repeat: 'none',  // none | all | one
+    volume: 0.75,
+    muted: false,
+    elapsed: 0,
+    playInterval: null,
+};
+
+/* ═══════════════════════════════════════════════
+   DOM REFS
+   ═══════════════════════════════════════════════ */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+const dom = {
+    artCanvas:     $('#artCanvas'),
+    gameTitle:     $('#gameTitle'),
+    artistName:    $('#artistName'),
+    copyright:     $('#copyright'),
+    trackCounter:  $('#trackCounter'),
+    albumWrap:     $('#albumWrap'),
+    libraryStrip:  $('#libraryStrip'),
+    trackList:     $('#trackList'),
+    playBtn:       $('#playBtn'),
+    playIcon:      $('#playIcon'),
+    stopBtn:       $('#stopBtn'),
+    prevBtn:       $('#prevBtn'),
+    nextBtn:       $('#nextBtn'),
+    shuffleBtn:    $('#shuffleBtn'),
+    repeatBtn:     $('#repeatBtn'),
+    muteBtn:       $('#muteBtn'),
+    volIcon:       $('#volIcon'),
+    progressTrack: $('#progressTrack'),
+    progressFill:  $('#progressFill'),
+    elapsed:       $('#elapsed'),
+    duration:      $('#duration'),
+    volumeTrack:   $('#volumeTrack'),
+    volumeFill:    $('#volumeFill'),
+    loadBtn:       $('#loadBtn'),
+    fileInput:     $('#fileInput'),
+    dropOverlay:   $('#dropOverlay'),
+    visualizer:    $('#visualizer'),
+};
+
+/* ═══════════════════════════════════════════════
+   SEEDED RNG & PIXEL ART
+   ═══════════════════════════════════════════════ */
+function mulberry32(a) {
+    return function() {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        let t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+}
+
+function drawPixelArt(canvas, colors, seed) {
+    const ctx = canvas.getContext('2d');
+    const grid = 16;
+    const cell = canvas.width / grid;
+    const rng = mulberry32(seed);
+
+    ctx.fillStyle = colors[0];
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Generate vertically-symmetric pattern
+    for (let y = 0; y < grid; y++) {
+        for (let x = 0; x < Math.ceil(grid / 2); x++) {
+            if (rng() > 0.45) {
+                const ci = Math.floor(rng() * (colors.length - 1)) + 1;
+                ctx.fillStyle = colors[ci];
+                ctx.fillRect(x * cell, y * cell, cell, cell);
+                ctx.fillRect((grid - 1 - x) * cell, y * cell, cell, cell);
+            }
+        }
+    }
+
+    // Pixel border
+    ctx.strokeStyle = colors[1];
+    ctx.lineWidth = cell;
+    ctx.strokeRect(cell / 2, cell / 2, canvas.width - cell, canvas.height - cell);
+}
+
+/* ═══════════════════════════════════════════════
+   VISUALIZER
+   ═══════════════════════════════════════════════ */
+const VIZ_BARS = 28;
+const vizHeights = new Float32Array(VIZ_BARS);
+const vizTargets = new Float32Array(VIZ_BARS);
+const vizPeaks   = new Float32Array(VIZ_BARS);
+const VIZ_COLORS = ['#00A800','#00E818','#58F898','#00E8D8','#0058F8','#7800AC','#E40058'];
+
+let vizRAF = null;
+
+function vizTick() {
+    const canvas = dom.visualizer;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.fillStyle = '#06060c';
+    ctx.fillRect(0, 0, w, h);
+
+    const barW = Math.floor(w / VIZ_BARS);
+    const gap = 1;
+    const pixH = 4;
+    const maxPix = Math.floor(h / pixH);
+
+    for (let i = 0; i < VIZ_BARS; i++) {
+        // Use real APU data when playing NSF, otherwise random
+        if (state.isPlaying && game() && game().isNSF && engine.isActive()) {
+            const ch = engine.getChannelOutputs();
+            const chVals = [ch.pulse1/15, ch.pulse2/15, ch.triangle/15, ch.noise/15, Math.min(ch.dmc/80, 1)];
+            // Spread 5 channels across 28 bars with some variance
+            const ci = Math.floor(i * 5 / VIZ_BARS);
+            const base = chVals[ci] || 0;
+            vizTargets[i] = base * (0.6 + Math.random() * 0.4);
+        } else if (state.isPlaying) {
+            vizTargets[i] = 0.15 + Math.random() * 0.85;
+        } else {
+            vizTargets[i] *= 0.94;
+        }
+        vizHeights[i] += (vizTargets[i] - vizHeights[i]) * 0.18;
+
+        const nPix = Math.round(vizHeights[i] * maxPix);
+        const x = i * barW + gap;
+        const bw = barW - gap * 2;
+
+        for (let p = 0; p < nPix; p++) {
+            const ratio = p / maxPix;
+            const ci = Math.min(Math.floor(ratio * VIZ_COLORS.length), VIZ_COLORS.length - 1);
+            ctx.fillStyle = VIZ_COLORS[ci];
+            ctx.fillRect(x, h - (p + 1) * pixH, bw, pixH - 1);
+        }
+
+        // Peak hold
+        if (vizHeights[i] > vizPeaks[i]) vizPeaks[i] = vizHeights[i];
+        else vizPeaks[i] *= 0.985;
+
+        const peakY = Math.round(vizPeaks[i] * maxPix);
+        if (peakY > 0) {
+            ctx.fillStyle = '#FCFCFC';
+            ctx.fillRect(x, h - peakY * pixH, bw, 1);
+        }
+    }
+
+    vizRAF = requestAnimationFrame(vizTick);
+}
+
+/* ═══════════════════════════════════════════════
+   TIME HELPERS
+   ═══════════════════════════════════════════════ */
+function parseTime(str) {
+    const [m, s] = str.split(':').map(Number);
+    return m * 60 + s;
+}
+function formatTime(sec) {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+/* ═══════════════════════════════════════════════
+   PLAYER LOGIC
+   ═══════════════════════════════════════════════ */
+function game()  { return GAMES[state.currentGame]; }
+function track() { return game().tracks[state.currentTrack]; }
+
+async function selectGame(idx) {
+    state.currentGame = idx;
+    state.currentTrack = 0;
+    state.elapsed = 0;
+    stop();
+    await ensureLoaded(idx);
+    if (game().isNSF) engine.selectTrack(0);
+    renderLibrary();
+    renderTrackList();
+    updateNowPlaying();
+}
+
+async function selectTrack(idx) {
+    state.currentTrack = idx;
+    state.elapsed = 0;
+    if (game().isNSF) engine.selectTrack(idx);
+    renderTrackList();
+    updateNowPlaying();
+    if (!state.isPlaying) await play();
+}
+
+async function play() {
+    state.isPlaying = true;
+    dom.playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    dom.albumWrap.classList.add('playing');
+    updateTrackActiveState();
+    if (!game().isNSF && game().file) {
+        const loaded = await ensureLoaded(state.currentGame);
+        if (loaded) {
+            engine.selectTrack(state.currentTrack);
+            renderTrackList();
+        }
+    }
+    if (game().isNSF) engine.play();
+    startTimer();
+}
+
+function pause() {
+    state.isPlaying = false;
+    dom.playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    dom.albumWrap.classList.remove('playing');
+    updateTrackActiveState();
+    clearInterval(state.playInterval);
+    state.playInterval = null;
+    if (game().isNSF) engine.pause();
+}
+
+function stop() {
+    if (game().isNSF) engine.stop();
+    pause();
+    state.elapsed = 0;
+    updateProgress();
+}
+
+function togglePlay() {
+    state.isPlaying ? pause() : play();
+}
+
+function nextTrack() {
+    if (state.shuffle) {
+        let next;
+        do { next = Math.floor(Math.random() * game().tracks.length); }
+        while (next === state.currentTrack && game().tracks.length > 1);
+        state.currentTrack = next;
+    } else {
+        state.currentTrack++;
+        if (state.currentTrack >= game().tracks.length) {
+            if (state.repeat === 'all') state.currentTrack = 0;
+            else { state.currentTrack = game().tracks.length - 1; stop(); return; }
+        }
+    }
+    state.elapsed = 0;
+    if (game().isNSF) engine.selectTrack(state.currentTrack);
+    renderTrackList();
+    updateNowPlaying();
+    if (state.isPlaying) {
+        if (game().isNSF) engine.play();
+        startTimer();
+    }
+}
+
+function prevTrack() {
+    if (state.elapsed > 3) {
+        state.elapsed = 0;
+        if (game().isNSF) engine.selectTrack(state.currentTrack);
+    } else {
+        state.currentTrack = Math.max(0, state.currentTrack - 1);
+        if (game().isNSF) engine.selectTrack(state.currentTrack);
+    }
+    state.elapsed = 0;
+    renderTrackList();
+    updateNowPlaying();
+    if (state.isPlaying) {
+        if (game().isNSF) engine.play();
+        startTimer();
+    }
+}
+
+function startTimer() {
+    clearInterval(state.playInterval);
+    state.playInterval = setInterval(() => {
+        if (game().isNSF && engine.isActive()) {
+            state.elapsed = engine.getElapsedTime();
+        } else if (!game().isNSF) {
+            state.elapsed += 0.25;
+        }
+        const dur = parseTime(track().time);
+        if (state.elapsed >= dur) {
+            if (state.repeat === 'one') {
+                state.elapsed = 0;
+                if (game().isNSF) engine.selectTrack(state.currentTrack);
+            } else {
+                nextTrack();
+                return;
+            }
+        }
+        updateProgress();
+    }, 250);
+}
+
+function toggleShuffle() {
+    state.shuffle = !state.shuffle;
+    dom.shuffleBtn.classList.toggle('active', state.shuffle);
+}
+
+function cycleRepeat() {
+    const modes = ['none', 'all', 'one'];
+    const idx = (modes.indexOf(state.repeat) + 1) % modes.length;
+    state.repeat = modes[idx];
+    dom.repeatBtn.classList.toggle('active', state.repeat !== 'none');
+    dom.repeatBtn.title = state.repeat === 'one' ? 'Repeat One'
+        : state.repeat === 'all' ? 'Repeat All' : 'Repeat';
+    // Show "1" indicator for repeat-one
+    if (state.repeat === 'one') {
+        dom.repeatBtn.style.setProperty('--repeat-label', '"1"');
+    }
+}
+
+function setVolume(v) {
+    state.volume = Math.max(0, Math.min(1, v));
+    state.muted = state.volume === 0;
+    dom.volumeFill.style.width = (state.volume * 100) + '%';
+    updateVolIcon();
+    engine.setVolume(state.muted ? 0 : state.volume);
+}
+
+function toggleMute() {
+    state.muted = !state.muted;
+    dom.volumeFill.style.width = (state.muted ? 0 : state.volume * 100) + '%';
+    updateVolIcon();
+    engine.setVolume(state.muted ? 0 : state.volume);
+}
+
+function updateVolIcon() {
+    const v = state.muted ? 0 : state.volume;
+    if (v === 0) {
+        dom.volIcon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+    } else if (v < 0.5) {
+        dom.volIcon.innerHTML = '<path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/>';
+    } else {
+        dom.volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+    }
+}
+
+function seek(ratio) {
+    const dur = parseTime(track().time);
+    state.elapsed = ratio * dur;
+    updateProgress();
+}
+
+/* ═══════════════════════════════════════════════
+   UI RENDERING
+   ═══════════════════════════════════════════════ */
+function renderLibrary() {
+    dom.libraryStrip.innerHTML = GAMES.map((g, i) => {
+        const active = i === state.currentGame ? ' active' : '';
+        return `<div class="game-card${active}" data-game="${i}">
+            <div class="game-card-art"><canvas width="64" height="64" data-card="${i}"></canvas></div>
+            <div class="game-card-title">${g.title}</div>
+        </div>`;
+    }).join('');
+
+    // Draw card art
+    GAMES.forEach((g, i) => {
+        const c = dom.libraryStrip.querySelector(`canvas[data-card="${i}"]`);
+        if (c) drawPixelArt(c, g.colors, g.seed);
+    });
+}
+
+function renderTrackList() {
+    const g = game();
+    dom.trackList.innerHTML = g.tracks.map((t, i) => {
+        const active = i === state.currentTrack ? ' active' : '';
+        const playing = i === state.currentTrack && state.isPlaying ? ' is-playing' : '';
+        return `<div class="track-row${active}${playing}" data-track="${i}">
+            <div class="track-num">${String(i + 1).padStart(2, '0')}</div>
+            <div class="track-playing-icon">
+                <div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div>
+            </div>
+            <div class="track-name">${t.name}</div>
+            <div class="track-time">${t.time}</div>
+        </div>`;
+    }).join('');
+}
+
+function updateTrackActiveState() {
+    dom.trackList.querySelectorAll('.track-row').forEach((row, i) => {
+        row.classList.toggle('active', i === state.currentTrack);
+        row.classList.toggle('is-playing', i === state.currentTrack && state.isPlaying);
+    });
+}
+
+function updateNowPlaying() {
+    const g = game();
+    const t = track();
+    dom.gameTitle.textContent = g.title;
+    dom.artistName.textContent = g.artist;
+    dom.copyright.textContent = g.copyright;
+    dom.trackCounter.textContent = `TRACK ${state.currentTrack + 1} / ${g.tracks.length}`;
+    dom.duration.textContent = t.time;
+    dom.elapsed.textContent = formatTime(state.elapsed);
+
+    drawPixelArt(dom.artCanvas, g.colors, g.seed);
+    updateProgress();
+}
+
+function updateProgress() {
+    const dur = parseTime(track().time);
+    const ratio = dur > 0 ? state.elapsed / dur : 0;
+    dom.progressFill.style.width = (ratio * 100) + '%';
+    dom.elapsed.textContent = formatTime(state.elapsed);
+}
+
+/* ═══════════════════════════════════════════════
+   EVENT LISTENERS
+   ═══════════════════════════════════════════════ */
+dom.playBtn.addEventListener('click', togglePlay);
+dom.stopBtn.addEventListener('click', stop);
+dom.prevBtn.addEventListener('click', prevTrack);
+dom.nextBtn.addEventListener('click', nextTrack);
+dom.shuffleBtn.addEventListener('click', toggleShuffle);
+dom.repeatBtn.addEventListener('click', cycleRepeat);
+dom.muteBtn.addEventListener('click', toggleMute);
+dom.loadBtn.addEventListener('click', () => dom.fileInput.click());
+
+dom.fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const buf = await file.arrayBuffer();
+        await loadNSFFile(buf);
+    }
+});
+
+// Track list clicks
+dom.trackList.addEventListener('click', (e) => {
+    const row = e.target.closest('.track-row');
+    if (row) selectTrack(parseInt(row.dataset.track));
+});
+
+// Library clicks
+dom.libraryStrip.addEventListener('click', (e) => {
+    const card = e.target.closest('.game-card');
+    if (card) selectGame(parseInt(card.dataset.game));
+});
+
+// Progress bar seeking
+function handleProgressInteraction(e) {
+    const rect = dom.progressTrack.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    seek(ratio);
+}
+dom.progressTrack.addEventListener('click', handleProgressInteraction);
+dom.progressTrack.addEventListener('mousedown', (e) => {
+    handleProgressInteraction(e);
+    const onMove = (ev) => handleProgressInteraction(ev);
+    const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+});
+
+// Volume bar
+function handleVolumeInteraction(e) {
+    const rect = dom.volumeTrack.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    setVolume(ratio);
+}
+dom.volumeTrack.addEventListener('click', handleVolumeInteraction);
+dom.volumeTrack.addEventListener('mousedown', (e) => {
+    handleVolumeInteraction(e);
+    const onMove = (ev) => handleVolumeInteraction(ev);
+    const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+});
+
+// Drag & drop
+let dragCounter = 0;
+document.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    dragCounter++;
+    dom.dropOverlay.classList.add('visible');
+});
+document.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    dragCounter--;
+    if (dragCounter <= 0) {
+        dragCounter = 0;
+        dom.dropOverlay.classList.remove('visible');
+    }
+});
+document.addEventListener('dragover', (e) => e.preventDefault());
+document.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    dragCounter = 0;
+    dom.dropOverlay.classList.remove('visible');
+    const file = e.dataTransfer.files[0];
+    if (file && /\.nsfe?$/i.test(file.name)) {
+        const buf = await file.arrayBuffer();
+        await loadNSFFile(buf);
+    }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT') return;
+    switch (e.code) {
+        case 'Space':     e.preventDefault(); togglePlay(); break;
+        case 'ArrowRight': nextTrack(); break;
+        case 'ArrowLeft':  prevTrack(); break;
+        case 'ArrowUp':    e.preventDefault(); setVolume(state.volume + 0.05); break;
+        case 'ArrowDown':  e.preventDefault(); setVolume(state.volume - 0.05); break;
+        case 'KeyM':       toggleMute(); break;
+        case 'KeyS':       toggleShuffle(); break;
+        case 'KeyR':       cycleRepeat(); break;
+    }
+});
+
+/* ═══════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════ */
+function init() {
+    renderLibrary();
+    renderTrackList();
+    updateNowPlaying();
+    setVolume(state.volume);
+    vizTick();
+}
+
+init();
+</script>
+</body>
+</html>

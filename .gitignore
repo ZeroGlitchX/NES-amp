@@ -1,0 +1,12 @@
+# NSF game music files (large binary collection)
+NES-Gamemusic/
+
+# Reference materials
+reference/
+
+# OS / editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
