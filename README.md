@@ -1,6 +1,6 @@
-# NESamp
+# NES-amp
 
-A web-based NES chiptune music player that runs entirely in the browser. Loads `.nsf` (Nintendo Sound Format) files and plays them through a cycle-accurate 6502 CPU and APU emulator — no plugins, no backend, no WebAssembly.
+A Web-based NES chiptune music player that runs entirely in the browser. Loads `.nsf` (Nintendo Sound Format) files and plays them through a cycle-accurate 6502 CPU and APU emulator — no plugins, no backend, no WebAssembly.
 
 ![HTML](https://img.shields.io/badge/HTML-single%20page-E34F26)
 ![JavaScript](https://img.shields.io/badge/JavaScript-vanilla-F7DF1E)
