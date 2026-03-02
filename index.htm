@@ -925,7 +925,7 @@ async function ensureLoaded(idx) {
 function reconcileTracks(game, realCount) {
     if (realCount > game.tracks.length) {
         for (let i = game.tracks.length; i < realCount; i++) {
-            game.tracks.push({ name: `Track ${String(i + 1).padStart(2, '0')}`, time: '3:00' });
+            game.tracks.push({ name: `Track ${String(i + 1).padStart(2, '0')}`, time: '2:30' });
         }
     } else if (realCount < game.tracks.length) {
         game.tracks.length = realCount;
@@ -1070,7 +1070,7 @@ async function loadNSFFile(arrayBuffer) {
             seed: hashString(meta.title),
             tracks: Array.from({length: meta.totalSongs}, (_, i) => ({
                 name: `Track ${String(i + 1).padStart(2, '0')}`,
-                time: '3:00'
+                time: '2:30'
             })),
             isNSF: true,
             _nsfBuffer: arrayBuffer
@@ -1106,7 +1106,7 @@ function libraryToGame(entry) {
         colors: colorsFromTitle(entry.title),
         seed: hashString(entry.title),
         file: entry.file,
-        tracks: [{ name: 'Track 01', time: '3:00' }],
+        tracks: [{ name: 'Track 01', time: '2:30' }],
         isNSF: false,
     };
 }
@@ -1221,6 +1221,16 @@ const vizHeights = new Float32Array(VIZ_BARS);
 const vizTargets = new Float32Array(VIZ_BARS);
 const vizPeaks   = new Float32Array(VIZ_BARS);
 const VIZ_COLORS = ['#00A800','#00E818','#58F898','#00E8D8','#0058F8','#7800AC','#E40058'];
+const VIZ_ATTACK = 0.90;
+const VIZ_RELEASE = 0.20;
+const VIZ_PEAK_DECAY = 0.20;
+const VIZ_CHANNELS = [
+    { label: '  P1',   color: '#FF5B5B' }, // Pulse 1
+    { label: '  P2',   color: '#FF9A3D' }, // Pulse 2
+    { label: '  TRI',  color: '#FFD84D' }, // Triangle
+    { label: '  NOI',  color: '#62F38C' }, // Noise
+    { label: ' DPCM', color: '#4FCBFF' }, // DPCM (DMC channel)
+];
 
 let vizRAF = null;
 
@@ -1237,42 +1247,81 @@ function vizTick() {
     const gap = 1;
     const pixH = 4;
     const maxPix = Math.floor(h / pixH);
+    const nsfChannelMode = state.isPlaying && game() && game().isNSF && engine.isActive();
+    let channelLevels = null;
+
+    if (nsfChannelMode) {
+        const ch = engine.getChannelOutputs();
+        channelLevels = [
+            Math.max(0, Math.min(1, ch.pulse1 / 15)),
+            Math.max(0, Math.min(1, ch.pulse2 / 15)),
+            Math.max(0, Math.min(1, ch.triangle / 15)),
+            Math.max(0, Math.min(1, ch.noise / 15)),
+            Math.max(0, Math.min(1, ch.dmc / 127)),
+        ];
+    }
 
     for (let i = 0; i < VIZ_BARS; i++) {
+        const channelIndex = Math.floor(i * VIZ_CHANNELS.length / VIZ_BARS);
+
         // Use real APU data when playing NSF, otherwise random
-        if (state.isPlaying && game() && game().isNSF && engine.isActive()) {
-            const ch = engine.getChannelOutputs();
-            const chVals = [ch.pulse1/15, ch.pulse2/15, ch.triangle/15, ch.noise/15, Math.min(ch.dmc/80, 1)];
-            // Spread 5 channels across 28 bars with some variance
-            const ci = Math.floor(i * 5 / VIZ_BARS);
-            const base = chVals[ci] || 0;
-            vizTargets[i] = base * (0.6 + Math.random() * 0.4);
+        if (nsfChannelMode) {
+            const base = channelLevels[channelIndex] || 0;
+            vizTargets[i] = Math.pow(base, 0.78);
         } else if (state.isPlaying) {
             vizTargets[i] = 0.15 + Math.random() * 0.85;
         } else {
             vizTargets[i] *= 0.94;
         }
-        vizHeights[i] += (vizTargets[i] - vizHeights[i]) * 0.18;
+        if (vizTargets[i] > vizHeights[i]) {
+            vizHeights[i] += (vizTargets[i] - vizHeights[i]) * VIZ_ATTACK;
+        } else {
+            vizHeights[i] += (vizTargets[i] - vizHeights[i]) * VIZ_RELEASE;
+        }
 
         const nPix = Math.round(vizHeights[i] * maxPix);
         const x = i * barW + gap;
         const bw = barW - gap * 2;
 
         for (let p = 0; p < nPix; p++) {
-            const ratio = p / maxPix;
-            const ci = Math.min(Math.floor(ratio * VIZ_COLORS.length), VIZ_COLORS.length - 1);
-            ctx.fillStyle = VIZ_COLORS[ci];
+            if (nsfChannelMode) {
+                ctx.fillStyle = VIZ_CHANNELS[channelIndex].color;
+            } else {
+                const ratio = p / maxPix;
+                const ci = Math.min(Math.floor(ratio * VIZ_COLORS.length), VIZ_COLORS.length - 1);
+                ctx.fillStyle = VIZ_COLORS[ci];
+            }
             ctx.fillRect(x, h - (p + 1) * pixH, bw, pixH - 1);
         }
 
         // Peak hold
         if (vizHeights[i] > vizPeaks[i]) vizPeaks[i] = vizHeights[i];
-        else vizPeaks[i] *= 0.985;
+        else vizPeaks[i] *= VIZ_PEAK_DECAY;
 
         const peakY = Math.round(vizPeaks[i] * maxPix);
         if (peakY > 0) {
-            ctx.fillStyle = '#FCFCFC';
+            ctx.fillStyle = nsfChannelMode ? VIZ_CHANNELS[channelIndex].color : '#FCFCFC';
             ctx.fillRect(x, h - peakY * pixH, bw, 1);
+        }
+    }
+
+    if (nsfChannelMode) {
+        ctx.font = '8px "Press Start 2P", monospace';
+        ctx.textBaseline = 'top';
+
+        for (let i = 0; i < VIZ_CHANNELS.length; i++) {
+            const x0 = Math.floor(i * w / VIZ_CHANNELS.length);
+            const x1 = Math.floor((i + 1) * w / VIZ_CHANNELS.length);
+            ctx.fillStyle = 'rgba(6,6,12,0.75)';
+            ctx.fillRect(x0, 0, x1 - x0, 10);
+
+            ctx.fillStyle = VIZ_CHANNELS[i].color;
+            ctx.fillText(VIZ_CHANNELS[i].label, x0 + 2, 1);
+
+            if (i > 0) {
+                ctx.fillStyle = 'rgba(252,252,252,0.12)';
+                ctx.fillRect(x0, 0, 1, h);
+            }
         }
     }
 

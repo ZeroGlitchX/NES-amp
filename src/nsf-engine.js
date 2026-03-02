@@ -6,6 +6,9 @@
 'use strict';
 
 const CPU_FREQ_NTSC = 1789773;
+const CPU_CLOCK_TRIM = 0.995;
+const NES_MIX_CENTER = 0.5;
+const OUTPUT_HEADROOM = 0.85;
 
 class NSFEngine {
     constructor() {
@@ -18,9 +21,11 @@ class NSFEngine {
         this.workletNode = null;
         this.scriptNode = null; // fallback
         this.gainNode = null;
+        this.volume = 0.5;
+        this.cpuClockHz = CPU_FREQ_NTSC * CPU_CLOCK_TRIM;
 
         this.sampleRate = 48000;
-        this.cyclesPerSample = CPU_FREQ_NTSC / this.sampleRate;
+        this.cyclesPerSample = this.cpuClockHz / this.sampleRate;
         this.cycleRemainder = 0;
         this.cyclesPerPlayCall = 29781; // default NTSC ~60Hz
 
@@ -29,6 +34,16 @@ class NSFEngine {
         this.playing = false;
         this.fillTimer = null;
         this.workletQueueSize = 0;
+        this.workletQueuedSamples = 0;
+
+        // Channel history ring buffer (for latency-compensated visualizer sync)
+        this.channelHistorySize = 131072;
+        this.channelHistoryMask = this.channelHistorySize - 1;
+        this.chPulse1 = new Uint8Array(this.channelHistorySize);
+        this.chPulse2 = new Uint8Array(this.channelHistorySize);
+        this.chTriangle = new Uint8Array(this.channelHistorySize);
+        this.chNoise = new Uint8Array(this.channelHistorySize);
+        this.chDmc = new Uint8Array(this.channelHistorySize);
 
         // Callbacks
         this.onStateChange = null;
@@ -53,7 +68,7 @@ class NSFEngine {
 
         // Calculate play call rate from header
         if (this.nsf.ntscSpeed > 0) {
-            this.cyclesPerPlayCall = Math.round(CPU_FREQ_NTSC * this.nsf.ntscSpeed / 1000000);
+            this.cyclesPerPlayCall = Math.round(this.cpuClockHz * this.nsf.ntscSpeed / 1000000);
         }
 
         // Init audio if not already done
@@ -77,10 +92,10 @@ class NSFEngine {
     async _initAudio() {
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         this.sampleRate = this.audioCtx.sampleRate;
-        this.cyclesPerSample = CPU_FREQ_NTSC / this.sampleRate;
+        this.cyclesPerSample = this.cpuClockHz / this.sampleRate;
 
-        // NES hardware output filter chain:
-        //   source → highpass 37Hz → highpass 440Hz → lowpass 14kHz → gain → dest
+        // NES-inspired output chain:
+        //   source → highpass 37Hz → highpass 120Hz → lowpass 15kHz → gain → dest
         const hp1 = this.audioCtx.createBiquadFilter();
         hp1.type = 'highpass';
         hp1.frequency.value = 37;
@@ -88,15 +103,16 @@ class NSFEngine {
 
         const hp2 = this.audioCtx.createBiquadFilter();
         hp2.type = 'highpass';
-        hp2.frequency.value = 440;
+        hp2.frequency.value = 120;
         hp2.Q.value = 0.707;
 
         const lp = this.audioCtx.createBiquadFilter();
         lp.type = 'lowpass';
-        lp.frequency.value = 14000;
+        lp.frequency.value = 15000;
         lp.Q.value = 0.707;
 
         this.gainNode = this.audioCtx.createGain();
+        this.gainNode.gain.value = this.volume;
 
         // Wire chain: source → hp1 → hp2 → lp → gain → destination
         hp1.connect(hp2);
@@ -113,6 +129,7 @@ class NSFEngine {
             this.workletNode.port.onmessage = (e) => {
                 if (e.data.type === 'status') {
                     this.workletQueueSize = e.data.queueSize;
+                    this.workletQueuedSamples = e.data.queuedSamples || 0;
                 }
             };
         } catch (err) {
@@ -127,6 +144,7 @@ class NSFEngine {
         this.currentSong = songNumber;
         this.samplesGenerated = 0;
         this.cycleRemainder = 0;
+        this.workletQueuedSamples = 0;
 
         // Reset memory (clear RAM)
         this.memory.reset();
@@ -178,6 +196,8 @@ class NSFEngine {
             // Absolute target — CPU overshoot from previous sample is
             // automatically compensated instead of accumulating (~2.7% drift)
             this._sampleTarget += wholeCycles;
+            let mixedCycleSum = 0;
+            let mixedCycleCount = 0;
 
             while (this.cpu.cycles < this._sampleTarget) {
                 // Call play routine at the correct rate (inline JSR so
@@ -190,10 +210,23 @@ class NSFEngine {
                 const prevCycles = this.cpu.cycles;
                 this.cpu.step();
                 const elapsed = this.cpu.cycles - prevCycles;
-                this.apu.clock(elapsed);
+                mixedCycleSum += this.apu.clock(elapsed, true);
+                mixedCycleCount += elapsed;
             }
 
-            output[i] = this.apu.getOutput();
+            const mix = mixedCycleCount > 0
+                ? (mixedCycleSum / mixedCycleCount)
+                : this.apu.getOutput();
+            const centered = (mix - NES_MIX_CENTER) * 2;
+            output[i] = Math.max(-1, Math.min(1, centered * OUTPUT_HEADROOM));
+
+            const ch = this.apu.getChannelOutputs();
+            const idx = this.samplesGenerated & this.channelHistoryMask;
+            this.chPulse1[idx] = ch.pulse1;
+            this.chPulse2[idx] = ch.pulse2;
+            this.chTriangle[idx] = ch.triangle;
+            this.chNoise[idx] = ch.noise;
+            this.chDmc[idx] = ch.dmc;
             this.samplesGenerated++;
         }
     }
@@ -211,6 +244,7 @@ class NSFEngine {
         if (this.workletNode) {
             this._startFillLoop();
         } else {
+            this.workletQueuedSamples = 0;
             this._startScriptProcessor();
         }
 
@@ -231,6 +265,7 @@ class NSFEngine {
         if (this.workletNode) {
             this.workletNode.port.postMessage({ type: 'stop' });
         }
+        this.workletQueuedSamples = 0;
         if (this.nsf) {
             this.initTrack(this.currentSong);
         }
@@ -243,13 +278,15 @@ class NSFEngine {
         if (this.workletNode) {
             this.workletNode.port.postMessage({ type: 'stop' });
         }
+        this.workletQueuedSamples = 0;
         this.initTrack(songNumber);
         if (wasPlaying) this.play();
     }
 
     setVolume(level) {
+        this.volume = Math.max(0, Math.min(1, level));
         if (this.gainNode) {
-            this.gainNode.gain.value = Math.max(0, Math.min(1, level));
+            this.gainNode.gain.value = this.volume;
         }
     }
 
@@ -266,12 +303,13 @@ class NSFEngine {
         if (this.workletNode) {
             this.workletNode.port.postMessage({ type: 'stop' });
         }
+        this.workletQueuedSamples = 0;
 
         // Re-init from scratch
         this.initTrack(this.currentSong);
 
         // Run play routine at ~60Hz to fast-forward
-        const targetFrames = Math.floor(seconds * CPU_FREQ_NTSC / this.cyclesPerPlayCall);
+        const targetFrames = Math.floor(seconds * this.cpuClockHz / this.cyclesPerPlayCall);
         for (let f = 0; f < targetFrames; f++) {
             this.cpu.jsr(this.nsf.playAddress);
             const playStart = this.cpu.cycles;
@@ -294,8 +332,25 @@ class NSFEngine {
     }
 
     getChannelOutputs() {
-        if (!this.apu) return { pulse1: 0, pulse2: 0, triangle: 0, noise: 0, dmc: 0 };
-        return this.apu.getChannelOutputs();
+        if (!this.apu || this.samplesGenerated === 0) {
+            return { pulse1: 0, pulse2: 0, triangle: 0, noise: 0, dmc: 0 };
+        }
+
+        // Visuals should follow audible output, not the most recently emulated state.
+        const deviceLatencySamples = Math.floor(
+            (((this.audioCtx && this.audioCtx.baseLatency) || 0) * this.sampleRate)
+        );
+        let delayedSample = this.samplesGenerated - 1 - this.workletQueuedSamples - deviceLatencySamples;
+        if (delayedSample < 0) delayedSample = 0;
+
+        const idx = delayedSample & this.channelHistoryMask;
+        return {
+            pulse1: this.chPulse1[idx],
+            pulse2: this.chPulse2[idx],
+            triangle: this.chTriangle[idx],
+            noise: this.chNoise[idx],
+            dmc: this.chDmc[idx]
+        };
     }
 
     isActive() { return this.playing; }
@@ -314,8 +369,8 @@ class NSFEngine {
     // ── AudioWorklet Fill Loop ──
     _startFillLoop() {
         this._stopFillLoop();
-        const BATCH = 2048;
-        const TARGET_QUEUE = 4;
+        const BATCH = 1024;
+        const TARGET_QUEUE = 2;
 
         this.fillTimer = setInterval(() => {
             if (!this.playing) return;

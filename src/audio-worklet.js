@@ -10,14 +10,17 @@ class NSFWorkletProcessor extends AudioWorkletProcessor {
         this.bufferQueue = [];
         this.currentBuffer = null;
         this.currentOffset = 0;
+        this.queuedSamples = 0;
 
         this.port.onmessage = (e) => {
             if (e.data.type === 'samples') {
                 this.bufferQueue.push(e.data.samples);
+                this.queuedSamples += e.data.samples.length;
             } else if (e.data.type === 'stop') {
                 this.bufferQueue = [];
                 this.currentBuffer = null;
                 this.currentOffset = 0;
+                this.queuedSamples = 0;
             }
         };
     }
@@ -50,10 +53,16 @@ class NSFWorkletProcessor extends AudioWorkletProcessor {
 
             this.currentOffset += toCopy;
             offset += toCopy;
+            this.queuedSamples -= toCopy;
+            if (this.queuedSamples < 0) this.queuedSamples = 0;
         }
 
-        // Report queue size for flow control
-        this.port.postMessage({ type: 'status', queueSize: this.bufferQueue.length });
+        // Report queue size/samples for flow control + A/V sync
+        this.port.postMessage({
+            type: 'status',
+            queueSize: this.bufferQueue.length,
+            queuedSamples: this.queuedSamples
+        });
         return true;
     }
 }

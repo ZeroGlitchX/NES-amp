@@ -292,7 +292,8 @@ class APU {
     }
 
     // ── Clock the APU by N CPU cycles ──
-    clock(cpuCycles) {
+    clock(cpuCycles, accumulateMix = false) {
+        let mixSum = 0;
         for (let i = 0; i < cpuCycles; i++) {
             this.fcCycle++;
 
@@ -312,7 +313,13 @@ class APU {
                 this._clockPulse(1);
                 this._clockNoise();
             }
+
+            if (accumulateMix) {
+                mixSum += this._mixOutput();
+            }
         }
+
+        return accumulateMix ? mixSum : 0;
     }
 
     // ── Frame Counter ──
@@ -545,11 +552,15 @@ class APU {
     }
 
     // ── Mixer Output ──
-    getOutput() {
+    _mixOutput() {
         const p = this.pulseTable[this.pulse[0].output + this.pulse[1].output];
         const tndIdx = 3 * this.tri.output + 2 * this.noise.output + this.dmc.outputLevel;
         const t = this.tndTable[Math.min(tndIdx, 202)];
-        return (p + t) * 2 - 1; // Scale from [0,~1] to [-1, 1]
+        return p + t; // Native mixer range [0, ~1]
+    }
+
+    getOutput() {
+        return this._mixOutput();
     }
 
     // ── Fast-forward APU by N CPU cycles (frame counter events only) ──
