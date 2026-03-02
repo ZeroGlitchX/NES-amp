@@ -9,7 +9,10 @@ class Memory {
         this.ram = new Uint8Array(0x0800);       // $0000-$07FF (2KB, mirrored to $1FFF)
         this.extraRam = new Uint8Array(0x2000);  // $6000-$7FFF (8KB)
         this.prgData = null;                     // Raw PRG ROM from NSF file
-        this.bankOffsets = new Int32Array(8);     // Byte offsets into prgData for 8x 4KB banks
+        this.prgImage = null;                    // Load-aligned/padded PRG image used for mapping
+        this.prgBaseAddress = 0x8000;
+        this.prgBankCount = 0;
+        this.bankOffsets = new Int32Array(8);    // Byte offsets into prgImage for 8x 4KB banks
         this.hasBankswitching = false;
         this.loadAddress = 0;
         this.apu = null;                         // Set after construction
@@ -19,10 +22,26 @@ class Memory {
         this.prgData = nsf.prgData;
         this.loadAddress = nsf.loadAddress;
         this.hasBankswitching = nsf.hasBankswitching;
+        this.bankOffsets.fill(-1);
+
+        // Build a load-aligned PRG image.
+        // For banked NSFs, padding to full 4KB pages is required so bank numbers
+        // in the NSF header map correctly when loadAddress is not page-aligned.
+        const startPad = this.loadAddress & 0x0FFF;
+        let imageSize = startPad + this.prgData.length;
+        if (this.hasBankswitching) {
+            imageSize = (imageSize + 0x0FFF) & ~0x0FFF;
+        }
+
+        this.prgImage = new Uint8Array(imageSize);
+        this.prgImage.set(this.prgData, startPad);
+        this.prgBaseAddress = this.loadAddress & 0xF000;
+        this.prgBankCount = Math.max(1, Math.ceil(this.prgImage.length / 0x1000));
 
         if (this.hasBankswitching) {
             for (let i = 0; i < 8; i++) {
-                this.bankOffsets[i] = nsf.bankswitch[i] * 0x1000;
+                const bank = nsf.bankswitch[i] % this.prgBankCount;
+                this.bankOffsets[i] = bank * 0x1000;
             }
         }
     }
@@ -71,19 +90,19 @@ class Memory {
         }
 
         // $8000-$FFFF: PRG ROM
-        if (!this.prgData) return 0;
+        if (!this.prgImage) return 0;
 
         if (this.hasBankswitching) {
             const bankIndex = (addr - 0x8000) >> 12; // 0-7
             const offset = this.bankOffsets[bankIndex] + (addr & 0x0FFF);
-            if (offset >= 0 && offset < this.prgData.length) {
-                return this.prgData[offset];
+            if (offset >= 0 && offset < this.prgImage.length) {
+                return this.prgImage[offset];
             }
             return 0;
         } else {
-            const offset = addr - this.loadAddress;
-            if (offset >= 0 && offset < this.prgData.length) {
-                return this.prgData[offset];
+            const offset = addr - this.prgBaseAddress;
+            if (offset >= 0 && offset < this.prgImage.length) {
+                return this.prgImage[offset];
             }
             return 0;
         }
@@ -112,7 +131,10 @@ class Memory {
         if (addr >= 0x5FF8 && addr <= 0x5FFF) {
             if (this.hasBankswitching) {
                 const bankIndex = addr - 0x5FF8;
-                this.bankOffsets[bankIndex] = value * 0x1000;
+                if (this.prgBankCount > 0) {
+                    const bank = value % this.prgBankCount;
+                    this.bankOffsets[bankIndex] = bank * 0x1000;
+                }
             }
             return;
         }
