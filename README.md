@@ -13,7 +13,10 @@ A web-based NES chiptune music player that runs entirely in the browser. Loads `
 - **506-game library** — randomly rotated on each page load, lazy-loaded on click
 - **Drag & drop** — load any `.nsf` file directly into the player
 - **Silence detection** — automatically scans track durations by running the emulator non-realtime
-- **Real-time visualizer** — per-channel spectrum bars driven by actual APU output
+- **Improved output tone** — cycle-averaged sample generation + NES-inspired filter chain (HP 37Hz, HP 120Hz, LP 15kHz)
+- **Pitch tuning** — slight NTSC clock trim for better playback pitch/speed match
+- **Per-channel visualizer** — dedicated color lanes for Pulse 1, Pulse 2, Triangle, Noise, and DPCM
+- **A/V sync-compensated visualizer** — channel display is delayed by queued audio + device latency to align with audible output
 - **AudioWorklet pipeline** — low-latency audio with ScriptProcessor fallback
 - **Bankswitch support** — handles NSF files with bank-switched PRG ROM
 - **Zero dependencies** — single `index.htm` + vanilla JS modules, no build step
@@ -38,8 +41,14 @@ src/
 2. **Load** — PRG ROM data is loaded into the memory bus with optional 4KB bank mapping
 3. **Init** — The CPU calls the NSF init routine (`JSR initAddress`) with the track number in the A register
 4. **Play loop** — At ~60Hz, the CPU calls the play routine (`JSR playAddress`). Between calls, the CPU steps instruction-by-instruction while the APU is clocked cycle-by-cycle
-5. **Sample generation** — For each audio sample (~48kHz), the APU mixer combines all channel outputs through the NES non-linear mixing tables
-6. **Output** — Samples are posted to an AudioWorklet node (or ScriptProcessor fallback) for playback
+5. **Sample generation** — For each audio sample (~48kHz), the engine averages mixer output across CPU cycles and applies NES non-linear mixing tables
+6. **Output** — Samples are posted to an AudioWorklet node (or ScriptProcessor fallback), then passed through the output filter chain
+7. **Visualizer sync** — Per-sample channel snapshots are stored and read back with latency compensation for tighter audio/visual alignment
+
+### Current defaults
+
+- **Startup volume:** `50%`
+- **Default track time:** `2:30` (used until/during duration scan)
 
 ## Usage
 
