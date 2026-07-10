@@ -55,17 +55,12 @@ src/
 Serve the project directory with any static HTTP server:
 
 ```bash
-# Python
-python3 -m http.server 8080
+# No Need To Run a Framework
 
-# Node
-npx serve .
-
-# PHP
-php -S localhost:8080
+Just place the directory in your HTML server root
 ```
 
-Open `http://localhost:8080` in a browser. Click any library card to load and play, or drag & drop a `.nsf` file onto the player.
+Open `http://localhost/nes-amp/` in a browser. Click any library card to load and play, or drag & drop a `.nsf` file onto the player.
 
 ### NSF files
 
