@@ -9,6 +9,7 @@ const COVER_ART = Object.freeze({
     "Parodius Da": "images/nes_box_art/parodius.webp",
     "Rampart": "images/nes_box_art/rampart.webp",
     "Twinbee": "images/nes_box_art/twinbee.webp",
+    "Twinbee 3": "images/nes_box_art/twinbee-3-jp.webp",
     "Rolling Thunder": "images/nes_box_art/rolling-thunder.webp",
     "Castlequest": "images/nes_box_art/castlequest.webp",
     "Pro Wrestling": "images/nes_box_art/pro-wrestling.webp",

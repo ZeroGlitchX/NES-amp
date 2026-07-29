@@ -643,7 +643,7 @@ html, body {
 }
 @keyframes dropPulse {
     0%, 100% { border-color: var(--nes-cyan); box-shadow: 0 0 30px rgba(0,232,216,0.1); }
-    50%      { border-color: var(--nes-green); box-shadow: 0 0 40px rgba(0,168,0,0.15); }
+    50%      { border-color: var(--accent); box-shadow: 0 0 40px var(--accent-glow); }
 }
 .drop-icon {
     font-family: var(--font-pixel);
@@ -778,9 +778,9 @@ html, body {
     --text-primary: #f7f7f4;
     --text-secondary: #a8a8b2;
     --text-dim: #686873;
-    --accent: #d8ff64;
-    --accent-strong: #bff436;
-    --accent-glow: rgba(216, 255, 100, 0.22);
+    --accent: #9187ff;
+    --accent-strong: #aaa2ff;
+    --accent-glow: rgba(145, 135, 255, .28);
     --art-primary: #8b5cf6;
     --art-secondary: #ec4899;
     --font-ui: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -1108,7 +1108,7 @@ button:focus-visible,
 .viz-status {
     padding: 3px 6px;
     color: var(--accent);
-    background: rgba(216,255,100,0.08);
+    background: rgba(145,135,255,.10);
     border-radius: 5px;
 }
 
@@ -1261,7 +1261,7 @@ button:focus-visible,
     border-radius: 13px;
 }
 .track-row:hover { background: rgba(255,255,255,0.045); }
-.track-row.active { background: rgba(216,255,100,0.075); }
+.track-row.active { background: rgba(145,135,255,.09); }
 .track-row.active::before {
     content: '';
     position: absolute;
@@ -1399,7 +1399,7 @@ button:focus-visible,
 
 .boot-screen {
     background:
-        radial-gradient(circle at 50% 43%, rgba(216,255,100,.08), transparent 25rem),
+        radial-gradient(circle at 50% 43%, rgba(145,135,255,.10), transparent 25rem),
         #08080b;
 }
 .boot-emblem { width: 54px; height: 54px; margin-bottom: 23px; border-radius: 17px; animation: logoIn .4s ease-out .35s both; }
@@ -1679,7 +1679,7 @@ button:focus-visible,
         font-size: 8px;
         font-variant-numeric: tabular-nums;
     }
-    .hero-progress span:last-child { text-align: right; }
+    .hero-progress > #heroDuration { text-align: right; }
     .hero-progress-track {
         height: 20px;
         display: flex;
@@ -1805,6 +1805,726 @@ button:focus-visible,
     .play-btn { width: 44px; }
 }
 
+/* ═══════════════════════════════════════════════
+   DISCOVERY LIBRARY + MOBILE DRAWER
+   ═══════════════════════════════════════════════ */
+:root {
+    --accent: #9187ff;
+    --accent-strong: #aaa2ff;
+    --accent-glow: rgba(145, 135, 255, .28);
+    --accent-warm: #ff7eb6;
+}
+
+.brand-mark,
+.boot-emblem {
+    color: white;
+    background: linear-gradient(145deg, #7669f6 0%, #9a80ff 48%, #ed75ad 100%);
+    box-shadow: 0 10px 30px rgba(126, 105, 255, .24);
+}
+.brand-mark svg { width: 29px; height: 29px; overflow: visible; }
+.brand-mark svg path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.brand-mark svg circle { fill: currentColor; }
+.logo { text-transform: lowercase; letter-spacing: -.9px; }
+.logo span { color: var(--accent-warm); }
+
+.mobile-menu-btn {
+    min-height: 42px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 0 15px;
+    color: var(--text-primary);
+    background: rgba(255,255,255,.055);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 750;
+    cursor: pointer;
+}
+.mobile-menu-btn svg,
+.album-action svg,
+.drawer-close svg,
+.refresh-discovery svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.mobile-menu-btn svg { width: 18px; height: 18px; }
+
+.album-actions {
+    width: min(100%, 310px);
+    margin: -2px auto 0;
+    display: grid;
+    grid-template-columns: 42px minmax(0,1fr) 42px;
+    align-items: center;
+    gap: 8px;
+}
+.album-action {
+    min-width: 0;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,.045);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.album-action:hover { color: white; border-color: var(--border-lit); background: rgba(255,255,255,.08); transform: translateY(-1px); }
+.album-action svg { width: 17px; height: 17px; }
+.favorite-btn svg { fill: transparent; }
+.favorite-btn.active {
+    color: #ffd8e9;
+    background: rgba(255,126,182,.12);
+    border-color: rgba(255,126,182,.34);
+}
+.favorite-btn.active svg { fill: var(--accent-warm); stroke: var(--accent-warm); }
+.mobile-up-next-preview { display: none; }
+
+.play-btn,
+.hero-play {
+    color: #111018 !important;
+    background: linear-gradient(145deg, #ffffff 0%, #ddd9ff 100%);
+    border-color: rgba(255,255,255,.88);
+    box-shadow: 0 10px 30px rgba(117,101,255,.24), inset 0 1px 0 white;
+}
+.play-btn:hover,
+.hero-play:hover {
+    color: #111018 !important;
+    background: linear-gradient(145deg, #fff 0%, #c9c3ff 100%);
+    box-shadow: 0 12px 36px rgba(117,101,255,.32), inset 0 1px 0 white;
+}
+
+.main-content {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+.discover-section { padding: 34px 38px 14px; }
+.discover-hero {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(300px, .9fr);
+    align-items: end;
+    gap: 34px;
+    margin-bottom: 24px;
+}
+.discover-hero h2 {
+    max-width: 620px;
+    color: var(--text-primary);
+    font-size: clamp(32px, 4vw, 54px);
+    line-height: .98;
+    font-weight: 800;
+    letter-spacing: -2.5px;
+}
+.discover-hero p { margin-top: 13px; color: var(--text-dim); font-size: 12px; font-weight: 600; }
+.search-field {
+    height: 52px;
+    display: grid;
+    grid-template-columns: 22px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 0 15px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,.055);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+    transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.search-field:focus-within {
+    color: var(--text-secondary);
+    background: rgba(255,255,255,.075);
+    border-color: rgba(145,135,255,.48);
+    box-shadow: 0 0 0 4px rgba(145,135,255,.08);
+}
+.search-field svg { width: 20px; height: 20px; fill: currentColor; }
+.search-field input {
+    width: 100%;
+    color: var(--text-primary);
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 12px;
+    font-weight: 600;
+}
+.search-field input::placeholder { color: var(--text-dim); }
+.search-field kbd {
+    padding: 4px 7px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-ui);
+    font-size: 9px;
+}
+.discover-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+}
+.filter-chips { display: flex; align-items: center; gap: 7px; margin-right: auto; }
+.filter-chip,
+.refresh-discovery {
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 13px;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 750;
+    cursor: pointer;
+}
+.filter-chip.active { color: white; background: rgba(145,135,255,.18); border-color: rgba(145,135,255,.42); }
+.discover-select {
+    height: 36px;
+    max-width: 175px;
+    padding: 0 30px 0 11px;
+    color: var(--text-secondary);
+    background: #17171d;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    outline: 0;
+}
+.discover-select:focus { border-color: rgba(145,135,255,.55); }
+.discovery-shelf,
+.complete-library { padding-top: 31px; }
+.shelf-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.shelf-heading > div > span,
+.drawer-header span,
+.mobile-discovery-prompt > span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--accent);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.shelf-heading h3 { color: var(--text-primary); font-size: 22px; line-height: 1.1; letter-spacing: -.7px; }
+.shelf-note,
+.library-count { color: var(--text-dim); font-size: 10px; font-weight: 700; }
+.refresh-discovery { height: 34px; }
+.refresh-discovery svg { width: 14px; height: 14px; }
+.discovery-strip { padding: 2px 2px 12px; }
+.discovery-strip .game-card { width: 142px; }
+.library-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+    gap: 23px 16px;
+    padding: 2px 2px 30px;
+}
+.library-grid .game-card { width: 100%; min-width: 0; }
+.game-card-subtitle {
+    padding: 3px 4px 0;
+    color: var(--text-dim);
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.game-card-favorite {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 4;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    color: white;
+    background: rgba(10,10,14,.62);
+    border-radius: 50%;
+    backdrop-filter: blur(8px);
+}
+.game-card-favorite svg { width: 13px; height: 13px; fill: var(--accent-warm); }
+.game-card-play-count {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    z-index: 4;
+    padding: 4px 6px;
+    color: white;
+    background: rgba(10,10,14,.65);
+    border-radius: 6px;
+    font-size: 7px;
+    font-weight: 800;
+    backdrop-filter: blur(8px);
+}
+.empty-library {
+    min-height: 180px;
+    display: grid;
+    place-content: center;
+    gap: 7px;
+    text-align: center;
+    color: var(--text-dim);
+}
+.empty-library[hidden] { display: none; }
+.empty-library strong { color: var(--text-primary); font-size: 14px; }
+.empty-library span { font-size: 10px; }
+.discovery-empty-card {
+    min-width: min(100%, 420px);
+    min-height: 172px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 7px;
+    padding: 24px;
+    color: var(--text-dim);
+    background: linear-gradient(135deg, rgba(145,135,255,.14), rgba(255,126,182,.055));
+    border: 1px solid rgba(145,135,255,.2);
+    border-radius: 21px;
+}
+.discovery-empty-card strong { color: var(--text-primary); font-size: 17px; }
+.discovery-empty-card span { font-size: 10px; }
+.tracklist-section {
+    min-height: 440px;
+    padding: 38px 38px 30px;
+    border-top: 1px solid var(--border);
+}
+.tracks-scroll { max-height: 390px; }
+
+.mobile-drawer,
+.mobile-drawer-backdrop { display: none; }
+
+@media (min-width: 1000px) {
+    .main-content {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(250px, 310px);
+        overflow: hidden;
+    }
+    .discover-section { min-width: 0; overflow-x: hidden; overflow-y: auto; }
+    .tracklist-section {
+        height: 100%;
+        min-height: 0;
+        padding: 34px 20px 24px;
+        border-top: 0;
+        border-left: 1px solid var(--border);
+    }
+    .tracks-scroll { max-height: none; }
+    .tracklist-header,
+    .track-row { grid-template-columns: 38px minmax(0,1fr) 54px; padding-left: 10px; padding-right: 10px; }
+}
+
+@media (max-width: 1100px) and (min-width: 761px) {
+    .discover-section { padding-left: 28px; padding-right: 28px; }
+    .discover-hero { grid-template-columns: 1fr; gap: 20px; }
+    .library-grid { grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); }
+}
+
+@media (max-width: 760px) {
+    html,
+    body { height: 100%; overflow: hidden; }
+    body.drawer-open { overflow: hidden; }
+    .app { height: 100dvh; min-height: 0; padding-bottom: 0; overflow: hidden; }
+    .header { position: relative; height: calc(68px + var(--safe-top)); padding-top: var(--safe-top); }
+    .brand { gap: 9px; }
+    .brand-mark { width: 36px; height: 36px; border-radius: 12px; }
+    .brand-mark svg { width: 25px; height: 25px; }
+    .logo, .logo span { font-size: 17px; }
+    .mobile-menu-btn { display: inline-flex; padding: 0 12px; }
+    .load-btn { width: 40px; min-height: 40px; }
+
+    .sidebar {
+        height: calc(100dvh - 68px - var(--safe-top));
+        min-height: 0;
+        padding: clamp(11px, 2vh, 20px) calc(18px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(18px + var(--safe-left));
+        gap: clamp(8px, 1.65vh, 15px);
+        overflow: hidden;
+    }
+    .now-playing-label { display: none; }
+    .album-art-wrap {
+        width: min(62vw, 310px, calc(100dvh - 420px));
+        min-width: 174px;
+        margin-top: 0;
+    }
+    .meta { flex: 0 0 auto; margin-top: 0; }
+    .now-track { margin-bottom: 3px; font-size: clamp(21px, 6vw, 30px); }
+    .game-title { margin-bottom: 5px; font-size: 12px; }
+    .audio-specs { display: none; }
+    .album-actions { width: min(100%,390px); margin-top: 0; }
+    .album-action { height: 38px; }
+
+    .mobile-up-next-preview {
+        width: min(100%, 390px);
+        min-height: 188px;
+        display: block;
+        margin: 0 auto;
+    }
+    .mobile-up-next-heading {
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        color: var(--text-dim);
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+    .mobile-up-next-heading button {
+        color: #b9b3ff;
+        background: transparent;
+        border: 0;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: .3px;
+        text-transform: uppercase;
+    }
+    .mobile-upcoming-list { display: grid; gap: 4px; }
+    .mobile-upcoming-row {
+        width: 100%;
+        min-width: 0;
+        height: 38px;
+        display: grid;
+        grid-template-columns: 38px minmax(0,1fr) 20px;
+        align-items: center;
+        gap: 9px;
+        padding: 0 7px 0 0;
+        color: var(--text-secondary);
+        text-align: left;
+        background: rgba(255,255,255,.035);
+        border: 1px solid rgba(255,255,255,.055);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .mobile-upcoming-row:active { transform: scale(.985); }
+    .mobile-upcoming-art {
+        width: 38px;
+        height: 38px;
+        overflow: hidden;
+        background: linear-gradient(145deg, var(--up-primary), var(--up-secondary));
+        border-radius: 9px;
+    }
+    .mobile-upcoming-art img,
+    .mobile-upcoming-art canvas { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .mobile-upcoming-art canvas { image-rendering: pixelated; }
+    .mobile-upcoming-copy { min-width: 0; }
+    .mobile-upcoming-copy strong,
+    .mobile-upcoming-copy span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mobile-upcoming-copy strong { color: var(--text-primary); font-size: 10px; line-height: 1.2; }
+    .mobile-upcoming-copy span { margin-top: 3px; color: var(--text-dim); font-size: 8px; }
+    .mobile-upcoming-row > svg { width: 14px; height: 14px; fill: none; stroke: var(--text-dim); stroke-width: 1.8; }
+
+    .viz-wrap {
+        flex: 0 0 clamp(145px, 21vh, 176px);
+        min-height: 145px;
+        max-height: 176px;
+        margin-top: auto;
+    }
+    #visualizer { opacity: .88; filter: saturate(1.12); }
+    .hero-transport { padding-top: 5px; }
+    .hero-control { position: relative; background: rgba(12,11,18,.72); }
+    .hero-control.active { color: #c8c2ff; border-color: rgba(145,135,255,.45); }
+    .hero-control.active::after {
+        content: '';
+        position: absolute;
+        inset: -5px;
+        pointer-events: none;
+        border: 1px solid rgba(175,166,255,.72);
+        border-radius: 50%;
+        box-shadow: 0 0 0 3px rgba(145,135,255,.08), 0 0 17px rgba(145,135,255,.28);
+        animation: activeControlRing 1.8s ease-in-out infinite;
+    }
+    @keyframes activeControlRing {
+        0%, 100% { opacity: .48; transform: scale(.96); }
+        50% { opacity: 1; transform: scale(1.035); }
+    }
+    .hero-control.hero-play {
+        color: #111018 !important;
+        background: linear-gradient(145deg, #fff 0%, #ddd9ff 100%);
+        border-color: rgba(255,255,255,.9);
+        box-shadow: 0 12px 32px rgba(117,101,255,.28), inset 0 1px 0 white;
+    }
+    .hero-progress-fill { background: linear-gradient(90deg, var(--accent), var(--accent-warm)); }
+    .hero-progress { grid-template-columns: 31px minmax(0,1fr) 31px 28px; gap: 6px; }
+    .hero-progress > #heroDuration { text-align: right; }
+    .hero-progress-art {
+        width: 28px;
+        height: 28px;
+        display: block;
+        overflow: hidden;
+        background: linear-gradient(145deg, var(--art-primary), var(--art-secondary));
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 7px;
+        box-shadow: 0 5px 12px rgba(0,0,0,.28);
+    }
+    .hero-progress-art img,
+    .hero-progress-art canvas { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .hero-progress-art canvas { image-rendering: pixelated; }
+    .hero-progress-art img[hidden],
+    .hero-progress-art canvas[hidden] { display: none; }
+
+    /* Mobile is one player page. Desktop discovery and the duplicate mini-player
+       live only inside the off-canvas drawer. */
+    .main-content,
+    .player-bar { display: none; }
+
+    .mobile-drawer-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 240;
+        display: block;
+        opacity: 0;
+        background: rgba(3,3,7,.66);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: opacity .3s ease;
+    }
+    .mobile-drawer-backdrop[hidden] { display: none; }
+    .mobile-drawer-backdrop.open { opacity: 1; }
+    .mobile-drawer {
+        position: fixed;
+        inset: 0 0 0 auto;
+        z-index: 250;
+        width: min(100%, 440px);
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        padding: calc(10px + var(--safe-top)) calc(16px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(16px + var(--safe-left));
+        color: var(--text-primary);
+        background: rgba(14,14,19,.98);
+        border-left: 1px solid var(--border);
+        box-shadow: -30px 0 80px rgba(0,0,0,.55);
+        transform: translateX(104%);
+        transition: transform .34s cubic-bezier(.2,.8,.2,1);
+    }
+    .mobile-drawer.open { transform: translateX(0); }
+    .drawer-handle { display: none; }
+    .drawer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 8px 2px 13px;
+    }
+    .drawer-header h2 { font-size: 30px; line-height: 1; letter-spacing: -1.2px; }
+    .drawer-close {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        color: var(--text-secondary);
+        background: rgba(255,255,255,.06);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+    }
+    .drawer-close svg { width: 18px; height: 18px; }
+    .drawer-tabs {
+        display: flex;
+        gap: 5px;
+        padding-bottom: 13px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .drawer-tabs::-webkit-scrollbar { display: none; }
+    .drawer-tab {
+        flex: 0 0 auto;
+        height: 34px;
+        padding: 0 12px;
+        color: var(--text-dim);
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 750;
+    }
+    .drawer-tab.active { color: white; background: rgba(145,135,255,.16); border-color: rgba(145,135,255,.35); }
+    .drawer-library-pane,
+    .drawer-queue-pane {
+        min-height: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .drawer-library-pane[hidden],
+    .drawer-queue-pane[hidden] { display: none; }
+    .mobile-search { height: 48px; flex: 0 0 auto; }
+    .mobile-selectors {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        padding: 9px 0;
+    }
+    .mobile-selectors .discover-select { width: 100%; max-width: none; }
+    .mobile-selectors .discover-select:first-child { grid-column: 1 / -1; }
+    .mobile-discovery-prompt {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin: 3px 0 8px;
+        padding: 12px 13px;
+        background: linear-gradient(115deg, rgba(145,135,255,.16), rgba(255,126,182,.08));
+        border: 1px solid rgba(145,135,255,.22);
+        border-radius: 14px;
+    }
+    .mobile-discovery-prompt[hidden] { display: none; }
+    .mobile-discovery-prompt > span { margin: 0; color: #c8c3ff; }
+    .mobile-discovery-prompt button {
+        padding: 7px 10px;
+        color: #15131c;
+        background: #f5f3ff;
+        border: 0;
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 800;
+    }
+    .mobile-library-list,
+    .mobile-track-list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+    .mobile-library-row {
+        display: grid;
+        grid-template-columns: 58px minmax(0,1fr) 38px;
+        align-items: center;
+        gap: 12px;
+        min-height: 72px;
+        padding: 7px 2px;
+        border-bottom: 1px solid rgba(255,255,255,.055);
+    }
+    .mobile-library-main {
+        grid-column: 1 / 3;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: 58px minmax(0,1fr);
+        align-items: center;
+        gap: 12px;
+        color: inherit;
+        text-align: left;
+        background: none;
+        border: 0;
+    }
+    .mobile-library-art {
+        position: relative;
+        width: 58px;
+        height: 58px;
+        overflow: hidden;
+        background: linear-gradient(145deg, var(--row-primary, #514985), var(--row-secondary, #7a4869));
+        border-radius: 12px;
+        box-shadow: 0 8px 18px rgba(0,0,0,.24);
+    }
+    .mobile-library-art img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.9) brightness(.88); }
+    .mobile-library-art canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+    .mobile-library-copy { min-width: 0; }
+    .mobile-library-copy strong,
+    .mobile-library-copy span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mobile-library-copy strong { color: var(--text-primary); font-size: 12px; line-height: 1.35; }
+    .mobile-library-copy span { margin-top: 4px; color: var(--text-dim); font-size: 9px; }
+    .mobile-library-row.current .mobile-library-copy strong { color: #c9c4ff; }
+    .mobile-favorite-toggle {
+        width: 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        color: var(--text-dim);
+        background: transparent;
+        border: 0;
+        border-radius: 50%;
+    }
+    .mobile-favorite-toggle svg { width: 18px; height: 18px; fill: transparent; stroke: currentColor; stroke-width: 1.7; }
+    .mobile-favorite-toggle.active { color: var(--accent-warm); }
+    .mobile-favorite-toggle.active svg { fill: currentColor; }
+    .mobile-empty { padding: 48px 20px; color: var(--text-dim); text-align: center; font-size: 11px; }
+    .mobile-queue-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 2px 13px;
+        color: var(--text-dim);
+        font-size: 9px;
+    }
+    .mobile-queue-heading span { max-width: 65%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mobile-queue-heading strong { color: var(--accent); font-weight: 750; }
+    .mobile-track-row {
+        width: 100%;
+        min-height: 57px;
+        display: grid;
+        grid-template-columns: 35px minmax(0,1fr) 44px;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 8px;
+        color: var(--text-secondary);
+        text-align: left;
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid rgba(255,255,255,.05);
+        border-radius: 10px;
+    }
+    .mobile-track-row.active { color: white; background: rgba(145,135,255,.1); }
+    .mobile-track-row span:first-child { color: var(--text-dim); font-family: var(--font-mono); font-size: 9px; }
+    .mobile-track-row strong { min-width: 0; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mobile-track-row time { color: var(--text-dim); font-family: var(--font-mono); font-size: 8px; text-align: right; }
+    .drawer-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 11px 2px 0;
+        color: var(--text-dim);
+        border-top: 1px solid var(--border);
+        font-size: 8px;
+    }
+    .drawer-footer span { max-width: 62%; line-height: 1.4; }
+    .drawer-footer button {
+        padding: 8px 10px;
+        color: var(--text-secondary);
+        background: rgba(255,255,255,.05);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        font-size: 8px;
+        font-weight: 750;
+    }
+}
+
+@media (max-width: 390px) {
+    .mobile-menu-btn span { display: none; }
+    .mobile-menu-btn { width: 40px; padding: 0; justify-content: center; }
+    .header { padding-left: calc(14px + var(--safe-left)); padding-right: calc(14px + var(--safe-right)); gap: 8px; }
+    .album-art-wrap { width: min(60vw, 270px, calc(100dvh - 408px)); }
+    .album-action.favorite-btn span { display: none; }
+}
+
+@media (max-width: 760px) and (max-height: 830px) {
+    .mobile-up-next-preview { min-height: 104px; }
+    .mobile-upcoming-row:nth-child(n + 3) { display: none; }
+}
+
+@media (max-width: 760px) and (max-height: 780px) {
+    .mobile-up-next-preview { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         scroll-behavior: auto !important;
@@ -1823,13 +2543,23 @@ button:focus-visible,
     <!-- Header -->
     <header class="header">
         <div class="brand">
-            <div class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <div class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 40 40" role="presentation">
+                    <path d="M9 24.5c4.4 0 4.4-9 8.8-9s4.4 9 8.8 9 4.4-9 4.4-9"/>
+                    <circle cx="9" cy="24.5" r="2.4"/>
+                    <circle cx="31" cy="15.5" r="2.4"/>
+                </svg>
+            </div>
             <div>
-                <div class="logo">NES<span>amp</span></div>
-                <div class="brand-tag">Original 8-bit audio</div>
+                <div class="logo">nesamp<span>.</span></div>
+                <div class="brand-tag">A world of 8-bit sound</div>
             </div>
         </div>
         <div class="header-spacer"></div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Open music library" aria-controls="mobileDrawer" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6.5h14M5 12h14M5 17.5h9"/></svg>
+            <span>Browse</span>
+        </button>
         <button class="load-btn" id="loadBtn" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v14h-2zM5 11h14v2H5z"/></svg>
             <span>Import NSF</span>
@@ -1860,24 +2590,43 @@ button:focus-visible,
             </div>
             <p class="copyright" id="copyright"></p>
         </div>
+        <div class="album-actions" aria-label="Album actions">
+            <button class="album-action album-skip" id="previousAlbumBtn" type="button" aria-label="Previous game album">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 5.5L8.5 12l7 6.5V5.5zM6 5h2v14H6z"/></svg>
+            </button>
+            <button class="album-action favorite-btn" id="favoriteBtn" type="button" aria-label="Add album to favorites" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S4 16 4 9.8C4 6.6 6.1 5 8.4 5c1.6 0 2.9.8 3.6 2 0 0 1.5-2 3.7-2C18.1 5 20 6.7 20 9.8c0 6.2-8 10.7-8 10.7z"/></svg>
+                <span>Favorite</span>
+            </button>
+            <button class="album-action album-skip" id="nextAlbumBtn" type="button" aria-label="Next game album">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 5.5l7 6.5-7 6.5V5.5zM16 5h2v14h-2z"/></svg>
+            </button>
+        </div>
+        <section class="mobile-up-next-preview" aria-labelledby="mobileUpNextTitle">
+            <div class="mobile-up-next-heading">
+                <span id="mobileUpNextTitle">Up next albums</span>
+                <button id="mobileUpNextSeeAll" type="button">See all</button>
+            </div>
+            <div class="mobile-upcoming-list" id="mobileUpcomingList"></div>
+        </section>
         <div class="viz-wrap">
             <div class="viz-head"><span>Live channels</span><span class="viz-status">APU</span></div>
             <canvas id="visualizer" width="280" height="72"></canvas>
             <div class="hero-player-controls">
                 <div class="hero-transport">
-                    <button class="hero-control hero-secondary" id="heroShuffleBtn" type="button" aria-label="Shuffle">
+                    <button class="hero-control hero-secondary" id="heroShuffleBtn" type="button" aria-label="Shuffle" aria-pressed="false">
                         <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
                     </button>
-                    <button class="hero-control album-control" id="heroPrevAlbumBtn" type="button" aria-label="Previous game album" title="Previous game album">
-                        <svg viewBox="0 0 24 24"><path d="M7 4h12v16H7V4zm2 2v12h8V6H9zM5 7H3v10h2V7zm8 2-4 3 4 3V9z"/></svg>
+                    <button class="hero-control" id="heroPrevBtn" type="button" aria-label="Previous track" title="Previous track">
+                        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
                     </button>
                     <button class="hero-control hero-play" id="heroPlayBtn" type="button" aria-label="Play or pause">
                         <svg viewBox="0 0 24 24" id="heroPlayIcon"><path d="M8 5v14l11-7z"/></svg>
                     </button>
-                    <button class="hero-control album-control" id="heroNextAlbumBtn" type="button" aria-label="Next game album" title="Next game album">
-                        <svg viewBox="0 0 24 24"><path d="M5 4h12v16H5V4zm2 2v12h8V6H7zm4 3 4 3-4 3V9zm8-2h2v10h-2V7z"/></svg>
+                    <button class="hero-control" id="heroNextBtn" type="button" aria-label="Next track" title="Next track">
+                        <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                     </button>
-                    <button class="hero-control hero-secondary" id="heroRepeatBtn" type="button" aria-label="Repeat">
+                    <button class="hero-control hero-secondary" id="heroRepeatBtn" type="button" aria-label="Repeat" aria-pressed="false">
                         <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
                     </button>
                 </div>
@@ -1887,6 +2636,10 @@ button:focus-visible,
                         <div class="hero-progress-fill" id="heroProgressFill"></div>
                     </div>
                     <span id="heroDuration">0:00</span>
+                    <span class="hero-progress-art" id="heroProgressArt" aria-hidden="true">
+                        <img id="heroProgressCover" alt="" hidden>
+                        <canvas id="heroProgressCanvas" width="32" height="32"></canvas>
+                    </span>
                 </div>
             </div>
         </div>
@@ -1894,15 +2647,69 @@ button:focus-visible,
 
     <!-- Main: Library + Tracks -->
     <section class="main-content">
-        <div class="library-section">
-            <div class="section-heading">
+        <div class="library-section discover-section">
+            <div class="discover-hero">
                 <div>
                     <div class="section-label">Discover</div>
-                    <h2>Game library</h2>
+                    <h2>Find your next<br>8-bit obsession.</h2>
+                    <p>Every soundtrack in the archive, ready to play.</p>
                 </div>
-                <span class="section-note">A fresh mix every visit</span>
+                <label class="search-field" for="discoverSearch">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.8 4a6.8 6.8 0 1 0 4.28 12.08L20 21l1-1-4.92-4.92A6.8 6.8 0 0 0 10.8 4zm0 2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6z"/></svg>
+                    <input id="discoverSearch" type="search" autocomplete="off" placeholder="Search games, publishers, NSF files…">
+                    <kbd>/</kbd>
+                </label>
             </div>
-            <div class="library-strip" id="libraryStrip"></div>
+            <div class="discover-toolbar" aria-label="Library filters">
+                <div class="filter-chips" id="desktopFilterChips">
+                    <button class="filter-chip active" type="button" data-view="all">All albums</button>
+                    <button class="filter-chip" type="button" data-view="favorites">Favorites</button>
+                    <button class="filter-chip" type="button" data-view="played">Played</button>
+                </div>
+                <select class="discover-select" id="discoverScope" aria-label="Search field">
+                    <option value="all">Everything</option>
+                    <option value="title">Game album</option>
+                    <option value="publisher">Publisher</option>
+                    <option value="file">NSF filename</option>
+                </select>
+                <select class="discover-select" id="publisherFilter" aria-label="Filter by publisher"><option value="all">All publishers</option></select>
+                <select class="discover-select" id="regionFilter" aria-label="Filter by system">
+                    <option value="all">NES + Famicom</option>
+                    <option value="NES">NES</option>
+                    <option value="Famicom">Famicom</option>
+                </select>
+            </div>
+
+            <section class="discovery-shelf" id="mostPlayedSection">
+                <div class="shelf-heading">
+                    <div><span>Made by you</span><h3>Most Played</h3></div>
+                    <span class="shelf-note" id="mostPlayedNote">Your listening history</span>
+                </div>
+                <div class="library-strip discovery-strip" id="mostPlayedStrip"></div>
+            </section>
+
+            <section class="discovery-shelf">
+                <div class="shelf-heading">
+                    <div><span>Go somewhere unexpected</span><h3>Expand Your Horizons</h3></div>
+                    <button class="refresh-discovery" id="refreshHorizonsBtn" type="button">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.75-4.24L13 11h8V3l-3.3 3.3z"/></svg>
+                        New mix
+                    </button>
+                </div>
+                <div class="library-strip discovery-strip" id="horizonsStrip"></div>
+            </section>
+
+            <section class="complete-library">
+                <div class="shelf-heading archive-heading">
+                    <div><span>Browse everything</span><h3>Complete Archive</h3></div>
+                    <span class="library-count" id="libraryCount">506 albums</span>
+                </div>
+                <div class="library-grid" id="libraryStrip"></div>
+                <div class="empty-library" id="emptyLibrary" hidden>
+                    <strong>No soundtracks found</strong>
+                    <span>Try a different title, publisher, or filter.</span>
+                </div>
+            </section>
         </div>
         <div class="tracklist-section">
             <div class="section-heading tracks-heading">
@@ -1919,6 +2726,57 @@ button:focus-visible,
             <div class="tracks-scroll" id="trackList"></div>
         </div>
     </section>
+
+    <!-- Mobile browse drawer: library and queue live off-canvas. -->
+    <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" hidden></div>
+    <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true" aria-label="Music library">
+        <div class="drawer-handle" aria-hidden="true"></div>
+        <div class="drawer-header">
+            <div><span>YOUR MUSIC</span><h2>Browse</h2></div>
+            <button class="drawer-close" id="mobileDrawerClose" type="button" aria-label="Close music library">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+        </div>
+        <div class="drawer-tabs" role="tablist" aria-label="Browse views">
+            <button class="drawer-tab active" type="button" role="tab" aria-selected="true" data-mobile-tab="library">Discover</button>
+            <button class="drawer-tab" type="button" role="tab" aria-selected="false" data-mobile-tab="favorites">Favorites</button>
+            <button class="drawer-tab" type="button" role="tab" aria-selected="false" data-mobile-tab="played">Most played</button>
+            <button class="drawer-tab" type="button" role="tab" aria-selected="false" data-mobile-tab="queue">Up next</button>
+        </div>
+        <div class="drawer-library-pane" id="mobileLibraryPane">
+            <label class="search-field mobile-search" for="mobileSearch">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.8 4a6.8 6.8 0 1 0 4.28 12.08L20 21l1-1-4.92-4.92A6.8 6.8 0 0 0 10.8 4zm0 2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6z"/></svg>
+                <input id="mobileSearch" type="search" autocomplete="off" placeholder="Search your library">
+            </label>
+            <div class="mobile-selectors">
+                <select class="discover-select" id="mobileScope" aria-label="Search field">
+                    <option value="all">Everything</option>
+                    <option value="title">Game album</option>
+                    <option value="publisher">Publisher</option>
+                    <option value="file">NSF filename</option>
+                </select>
+                <select class="discover-select" id="mobilePublisher" aria-label="Filter by publisher"><option value="all">All publishers</option></select>
+                <select class="discover-select" id="mobileRegion" aria-label="Filter by system">
+                    <option value="all">NES + Famicom</option>
+                    <option value="NES">NES</option>
+                    <option value="Famicom">Famicom</option>
+                </select>
+            </div>
+            <div class="mobile-discovery-prompt" id="mobileDiscoveryPrompt">
+                <span>EXPAND YOUR HORIZONS</span>
+                <button id="mobileSurpriseBtn" type="button">Surprise me</button>
+            </div>
+            <div class="mobile-library-list" id="mobileLibraryList"></div>
+        </div>
+        <div class="drawer-queue-pane" id="mobileQueuePane" hidden>
+            <div class="mobile-queue-heading"><span id="mobileQueueAlbum">Selected soundtrack</span><strong id="mobileQueueCount">0 tracks</strong></div>
+            <div class="mobile-track-list" id="mobileTrackList"></div>
+        </div>
+        <div class="drawer-footer">
+            <span id="listeningSummary">Listening data stays on this device.</span>
+            <button id="exportDataBtn" type="button">Export JSON</button>
+        </div>
+    </aside>
 
     <!-- Player Bar -->
     <footer class="player-bar">
@@ -1985,13 +2843,13 @@ button:focus-visible,
 </div>
 
 <!-- NSF Engine -->
-<script src="src/nsf-parser.js?v=20260729-1"></script>
-<script src="src/cpu6502.js?v=20260729-1"></script>
-<script src="src/apu.js?v=20260729-1"></script>
-<script src="src/memory.js?v=20260729-1"></script>
-<script src="src/nsf-engine.js?v=20260729-1"></script>
-<script src="src/games-library.js?v=20260729-1"></script>
-<script src="src/cover-art.js?v=20260729-1"></script>
+<script src="src/nsf-parser.js?v=20260729-2"></script>
+<script src="src/cpu6502.js?v=20260729-2"></script>
+<script src="src/apu.js?v=20260729-2"></script>
+<script src="src/memory.js?v=20260729-2"></script>
+<script src="src/nsf-engine.js?v=20260729-2"></script>
+<script src="src/games-library.js?v=20260729-2"></script>
+<script src="src/cover-art.js?v=20260729-2"></script>
 
 <script>
 /* ═══════════════════════════════════════════════
@@ -2180,11 +3038,16 @@ async function loadNSFFile(arrayBuffer) {
         // Create a game entry for the library
         const gameEntry = {
             title: meta.title || 'Unknown',
+            catalogTitle: meta.title || 'Imported NSF',
+            publisher: meta.artist || 'Imported',
             artist: meta.artist || 'Unknown',
             copyright: meta.copyright || '',
+            region: 'Imported',
             cover: COVER_ART[meta.title] || null,
             colors: colorsFromTitle(meta.title),
             seed: hashString(meta.title),
+            file: null,
+            nsfName: 'Imported file',
             tracks: Array.from({length: meta.totalSongs}, (_, i) => ({
                 name: `Track ${String(i + 1).padStart(2, '0')}`,
                 time: '2:30'
@@ -2210,20 +3073,23 @@ async function loadNSFFile(arrayBuffer) {
 }
 
 /* ═══════════════════════════════════════════════
-   LIBRARY → GAME ENTRIES (random pick each load)
+   COMPLETE LIBRARY + LOCAL LISTENING DATA
    ═══════════════════════════════════════════════ */
-const LIBRARY_CARD_COUNT = 12;
 
 // Build a GAMES entry from a library record
 function libraryToGame(entry) {
     return {
         title: entry.title,
+        catalogTitle: entry.title,
+        publisher: entry.publisher,
         artist: entry.publisher,
         copyright: entry.region === 'Famicom' ? 'Famicom' : 'NES',
+        region: entry.region,
         cover: COVER_ART[entry.title] || null,
         colors: colorsFromTitle(entry.title),
         seed: hashString(entry.title),
         file: entry.file,
+        nsfName: entry.file.split('/').pop(),
         tracks: [{ name: 'Track 01', time: '2:30' }],
         isNSF: false,
     };
@@ -2239,14 +3105,66 @@ function shuffleArray(arr) {
     return a;
 }
 
-const COVER_LIBRARY = NSF_LIBRARY.filter(entry => COVER_ART[entry.title]);
-const GAMES = shuffleArray(COVER_LIBRARY).slice(0, LIBRARY_CARD_COUNT).map(libraryToGame);
+// Every NSF is a first-class album. Stable source order keeps saved activity and
+// links predictable; discovery shelves provide the randomized experience.
+const GAMES = NSF_LIBRARY.map(libraryToGame);
+const GAME_INDEX_BY_KEY = new Map(GAMES.map((g, index) => [g.file, index]));
+
+const LISTENING_DATA_KEY = 'nesamp-listening-v1';
+
+function loadListeningData() {
+    const fallback = {
+        version: 1,
+        favorites: {},
+        plays: {},
+        lastPlayed: {},
+        recent: [],
+        totalPlays: 0,
+        lastGameKey: null,
+    };
+
+    try {
+        const saved = JSON.parse(localStorage.getItem(LISTENING_DATA_KEY) || 'null');
+        if (!saved || typeof saved !== 'object') return fallback;
+        return {
+            ...fallback,
+            ...saved,
+            favorites: saved.favorites && typeof saved.favorites === 'object' ? saved.favorites : {},
+            plays: saved.plays && typeof saved.plays === 'object' ? saved.plays : {},
+            lastPlayed: saved.lastPlayed && typeof saved.lastPlayed === 'object' ? saved.lastPlayed : {},
+            recent: Array.isArray(saved.recent) ? saved.recent : [],
+        };
+    } catch (err) {
+        console.warn('Listening data could not be read:', err);
+        return fallback;
+    }
+}
+
+const listeningData = loadListeningData();
+
+function saveListeningData() {
+    try {
+        localStorage.setItem(LISTENING_DATA_KEY, JSON.stringify(listeningData));
+    } catch (err) {
+        console.warn('Listening data could not be saved:', err);
+    }
+}
+
+function gameKey(g = game()) {
+    return g.file || `import:${g.catalogTitle || g.title}`;
+}
+
+function isFavorite(index) {
+    return Boolean(listeningData.favorites[gameKey(GAMES[index])]);
+}
+
+const savedGameIndex = GAME_INDEX_BY_KEY.get(listeningData.lastGameKey);
 
 /* ═══════════════════════════════════════════════
    STATE
    ═══════════════════════════════════════════════ */
 const state = {
-    currentGame: 0,
+    currentGame: Number.isInteger(savedGameIndex) ? savedGameIndex : Math.floor(Math.random() * GAMES.length),
     currentTrack: 0,
     isPlaying: false,
     shuffle: false,
@@ -2256,6 +3174,14 @@ const state = {
     elapsed: 0,
     playInterval: null,
     isSwitchingGame: false,
+    lastCountedPlay: null,
+    libraryQuery: '',
+    libraryScope: 'all',
+    libraryPublisher: 'all',
+    libraryRegion: 'all',
+    libraryView: 'all',
+    mobileTab: 'library',
+    horizonGames: [],
 };
 
 /* ═══════════════════════════════════════════════
@@ -2302,14 +3228,52 @@ const dom = {
     miniCover:     $('#miniCover'),
     heroPlayBtn:   $('#heroPlayBtn'),
     heroPlayIcon:  $('#heroPlayIcon'),
-    heroPrevAlbumBtn: $('#heroPrevAlbumBtn'),
-    heroNextAlbumBtn: $('#heroNextAlbumBtn'),
+    heroPrevBtn:   $('#heroPrevBtn'),
+    heroNextBtn:   $('#heroNextBtn'),
     heroShuffleBtn: $('#heroShuffleBtn'),
     heroRepeatBtn:  $('#heroRepeatBtn'),
     heroProgressTrack: $('#heroProgressTrack'),
     heroProgressFill:  $('#heroProgressFill'),
     heroElapsed:       $('#heroElapsed'),
     heroDuration:      $('#heroDuration'),
+    heroProgressArt:   $('#heroProgressArt'),
+    heroProgressCover: $('#heroProgressCover'),
+    heroProgressCanvas: $('#heroProgressCanvas'),
+    previousAlbumBtn:  $('#previousAlbumBtn'),
+    nextAlbumBtn:      $('#nextAlbumBtn'),
+    favoriteBtn:       $('#favoriteBtn'),
+    mobileUpcomingList: $('#mobileUpcomingList'),
+    mobileUpNextSeeAll: $('#mobileUpNextSeeAll'),
+    discoverSearch:    $('#discoverSearch'),
+    discoverScope:     $('#discoverScope'),
+    publisherFilter:   $('#publisherFilter'),
+    regionFilter:      $('#regionFilter'),
+    desktopFilterChips: $('#desktopFilterChips'),
+    mostPlayedSection: $('#mostPlayedSection'),
+    mostPlayedStrip:   $('#mostPlayedStrip'),
+    mostPlayedNote:    $('#mostPlayedNote'),
+    horizonsStrip:     $('#horizonsStrip'),
+    refreshHorizonsBtn: $('#refreshHorizonsBtn'),
+    libraryCount:      $('#libraryCount'),
+    emptyLibrary:      $('#emptyLibrary'),
+    mobileMenuBtn:     $('#mobileMenuBtn'),
+    mobileDrawer:      $('#mobileDrawer'),
+    mobileDrawerBackdrop: $('#mobileDrawerBackdrop'),
+    mobileDrawerClose: $('#mobileDrawerClose'),
+    mobileLibraryPane: $('#mobileLibraryPane'),
+    mobileQueuePane:   $('#mobileQueuePane'),
+    mobileSearch:      $('#mobileSearch'),
+    mobileScope:       $('#mobileScope'),
+    mobilePublisher:   $('#mobilePublisher'),
+    mobileRegion:      $('#mobileRegion'),
+    mobileDiscoveryPrompt: $('#mobileDiscoveryPrompt'),
+    mobileSurpriseBtn: $('#mobileSurpriseBtn'),
+    mobileLibraryList: $('#mobileLibraryList'),
+    mobileTrackList:   $('#mobileTrackList'),
+    mobileQueueAlbum:  $('#mobileQueueAlbum'),
+    mobileQueueCount:  $('#mobileQueueCount'),
+    listeningSummary:  $('#listeningSummary'),
+    exportDataBtn:     $('#exportDataBtn'),
 };
 
 /* ═══════════════════════════════════════════════
@@ -2354,40 +3318,70 @@ function drawPixelArt(canvas, colors, seed) {
 /* ═══════════════════════════════════════════════
    VISUALIZER
    ═══════════════════════════════════════════════ */
-const VIZ_BARS = 28;
+const VIZ_BARS = 48;
 const vizHeights = new Float32Array(VIZ_BARS);
 const vizTargets = new Float32Array(VIZ_BARS);
 const vizPeaks   = new Float32Array(VIZ_BARS);
-const VIZ_COLORS = ['#00A800','#00E818','#58F898','#00E8D8','#0058F8','#7800AC','#E40058'];
-const VIZ_ATTACK = 0.90;
-const VIZ_RELEASE = 0.20;
-const VIZ_PEAK_DECAY = 0.20;
-const VIZ_CHANNELS = [
-    { label: '  P1',   color: '#FF5B5B' }, // Pulse 1
-    { label: '  P2',   color: '#FF9A3D' }, // Pulse 2
-    { label: '  TRI',  color: '#FFD84D' }, // Triangle
-    { label: '  NOI',  color: '#62F38C' }, // Noise
-    { label: ' DPCM', color: '#4FCBFF' }, // DPCM (DMC channel)
-];
+const VIZ_ATTACK = 0.34;
+const VIZ_RELEASE = 0.09;
+const VIZ_PEAK_DECAY = 0.965;
 
 let vizRAF = null;
 
-function vizTick() {
+function appendSmoothCurve(ctx, points, moveTo = true) {
+    if (!points.length) return;
+    if (moveTo) ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+        const previous = points[i - 1];
+        const point = points[i];
+        ctx.quadraticCurveTo(
+            previous.x,
+            previous.y,
+            (previous.x + point.x) / 2,
+            (previous.y + point.y) / 2
+        );
+    }
+    const last = points[points.length - 1];
+    ctx.lineTo(last.x, last.y);
+}
+
+function vizTick(timestamp = 0) {
     const canvas = dom.visualizer;
     const ctx = canvas.getContext('2d');
     const w = canvas.width;
     const h = canvas.height;
+    const nsfChannelMode = state.isPlaying && game() && game().isNSF && engine.isActive();
+    const rootStyle = getComputedStyle(document.documentElement);
+    const artPrimary = rootStyle.getPropertyValue('--art-primary').trim() || '#9187ff';
+    const artSecondary = rootStyle.getPropertyValue('--art-secondary').trim() || '#ff7eb6';
+    const accent = rootStyle.getPropertyValue('--accent').trim() || '#9187ff';
+    const centerY = h * .56;
 
-    ctx.fillStyle = '#0a0a0e';
+    ctx.clearRect(0, 0, w, h);
+    const backdrop = ctx.createLinearGradient(0, 0, 0, h);
+    backdrop.addColorStop(0, 'rgba(8,8,14,.28)');
+    backdrop.addColorStop(.52, 'rgba(7,7,12,.72)');
+    backdrop.addColorStop(1, 'rgba(5,5,10,.9)');
+    ctx.fillStyle = backdrop;
     ctx.fillRect(0, 0, w, h);
 
-    const barW = Math.floor(w / VIZ_BARS);
-    const gap = 1;
-    const pixH = 4;
-    const maxPix = Math.floor(h / pixH);
-    const nsfChannelMode = state.isPlaying && game() && game().isNSF && engine.isActive();
-    let channelLevels = null;
+    const ambient = ctx.createRadialGradient(w * .5, centerY, 0, w * .5, centerY, w * .6);
+    ambient.addColorStop(0, 'rgba(145,135,255,.12)');
+    ambient.addColorStop(1, 'rgba(145,135,255,0)');
+    ctx.fillStyle = ambient;
+    ctx.fillRect(0, 0, w, h);
 
+    // Quiet guides add depth without returning to the old block-meter grid.
+    ctx.lineWidth = 1;
+    [0.24, 0.56, 0.86].forEach((ratio, index) => {
+        ctx.strokeStyle = index === 1 ? 'rgba(255,255,255,.07)' : 'rgba(255,255,255,.035)';
+        ctx.beginPath();
+        ctx.moveTo(0, Math.round(h * ratio) + .5);
+        ctx.lineTo(w, Math.round(h * ratio) + .5);
+        ctx.stroke();
+    });
+
+    let channelLevels = [0, 0, 0, 0, 0];
     if (nsfChannelMode) {
         const ch = engine.getChannelOutputs();
         channelLevels = [
@@ -2400,69 +3394,109 @@ function vizTick() {
     }
 
     for (let i = 0; i < VIZ_BARS; i++) {
-        const channelIndex = Math.floor(i * VIZ_CHANNELS.length / VIZ_BARS);
+        const normalized = i / (VIZ_BARS - 1);
+        const channelPosition = normalized * (channelLevels.length - 1);
+        const leftChannel = Math.floor(channelPosition);
+        const rightChannel = Math.min(channelLevels.length - 1, leftChannel + 1);
+        const channelMix = channelPosition - leftChannel;
+        const realLevel = channelLevels[leftChannel] * (1 - channelMix)
+            + channelLevels[rightChannel] * channelMix;
 
-        // Use real APU data when playing NSF, otherwise random
         if (nsfChannelMode) {
-            const base = channelLevels[channelIndex] || 0;
-            vizTargets[i] = Math.pow(base, 0.78);
+            const texture = .76 + .24 * Math.sin(timestamp * .004 + i * .67);
+            vizTargets[i] = Math.pow(realLevel, .72) * texture;
         } else if (state.isPlaying) {
-            vizTargets[i] = 0.15 + Math.random() * 0.85;
+            vizTargets[i] = .12 + .18 * (Math.sin(timestamp * .004 + i * .42) + 1) / 2;
         } else {
-            // Keep a quiet hardware-style floor visible while paused.
-            vizTargets[i] = 0.028 + (i % 4) * 0.007;
+            vizTargets[i] = .028 + .025 * (Math.sin(timestamp * .0018 + i * .28) + 1) / 2;
         }
+
         if (vizTargets[i] > vizHeights[i]) {
             vizHeights[i] += (vizTargets[i] - vizHeights[i]) * VIZ_ATTACK;
         } else {
             vizHeights[i] += (vizTargets[i] - vizHeights[i]) * VIZ_RELEASE;
         }
-
-        const nPix = Math.round(vizHeights[i] * maxPix);
-        const x = i * barW + gap;
-        const bw = barW - gap * 2;
-
-        for (let p = 0; p < nPix; p++) {
-            if (nsfChannelMode) {
-                ctx.fillStyle = VIZ_CHANNELS[channelIndex].color;
-            } else {
-                const ratio = p / maxPix;
-                const ci = Math.min(Math.floor(ratio * VIZ_COLORS.length), VIZ_COLORS.length - 1);
-                ctx.fillStyle = VIZ_COLORS[ci];
-            }
-            ctx.fillRect(x, h - (p + 1) * pixH, bw, pixH - 1);
-        }
-
-        // Peak hold
         if (vizHeights[i] > vizPeaks[i]) vizPeaks[i] = vizHeights[i];
         else vizPeaks[i] *= VIZ_PEAK_DECAY;
-
-        const peakY = Math.round(vizPeaks[i] * maxPix);
-        if (peakY > 0) {
-            ctx.fillStyle = nsfChannelMode ? VIZ_CHANNELS[channelIndex].color : '#FCFCFC';
-            ctx.fillRect(x, h - peakY * pixH, bw, 1);
-        }
     }
 
-    if (nsfChannelMode) {
-        ctx.font = '700 8px "Space Mono", monospace';
-        ctx.textBaseline = 'top';
-
-        for (let i = 0; i < VIZ_CHANNELS.length; i++) {
-            const x0 = Math.floor(i * w / VIZ_CHANNELS.length);
-            const x1 = Math.floor((i + 1) * w / VIZ_CHANNELS.length);
-            ctx.fillStyle = 'rgba(6,6,12,0.75)';
-            ctx.fillRect(x0, 0, x1 - x0, 10);
-
-            ctx.fillStyle = VIZ_CHANNELS[i].color;
-            ctx.fillText(VIZ_CHANNELS[i].label, x0 + 2, 1);
-
-            if (i > 0) {
-                ctx.fillStyle = 'rgba(252,252,252,0.12)';
-                ctx.fillRect(x0, 0, 1, h);
-            }
-        }
+    const step = w / (VIZ_BARS - 1);
+    const maxAmplitude = h * .39;
+    const upper = [];
+    const lower = [];
+    for (let i = 0; i < VIZ_BARS; i++) {
+        const taper = .62 + .38 * Math.sin(Math.PI * i / (VIZ_BARS - 1));
+        const amplitude = Math.max(1.4, vizHeights[i] * maxAmplitude * taper);
+        const x = i * step;
+        upper.push({ x, y: centerY - amplitude });
+        lower.unshift({ x, y: centerY + amplitude * .72 });
     }
+
+    // Rounded spectrum capsules sit behind a fluid mirrored ribbon.
+    const barGradient = ctx.createLinearGradient(0, centerY - maxAmplitude, 0, centerY + maxAmplitude);
+    barGradient.addColorStop(0, artSecondary);
+    barGradient.addColorStop(.5, accent);
+    barGradient.addColorStop(1, artPrimary);
+    ctx.save();
+    ctx.globalAlpha = nsfChannelMode ? .16 : .075;
+    ctx.fillStyle = barGradient;
+    const capsuleWidth = Math.max(1.5, step * .38);
+    for (let i = 0; i < VIZ_BARS; i += 2) {
+        const amplitude = Math.max(2, vizHeights[i] * maxAmplitude);
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(i * step - capsuleWidth / 2, centerY - amplitude, capsuleWidth, amplitude * 1.72, capsuleWidth);
+        } else {
+            ctx.rect(i * step - capsuleWidth / 2, centerY - amplitude, capsuleWidth, amplitude * 1.72);
+        }
+        ctx.fill();
+    }
+    ctx.restore();
+
+    const ribbonGradient = ctx.createLinearGradient(0, 0, w, 0);
+    ribbonGradient.addColorStop(0, artPrimary);
+    ribbonGradient.addColorStop(.48, accent);
+    ribbonGradient.addColorStop(1, artSecondary);
+
+    ctx.beginPath();
+    appendSmoothCurve(ctx, upper);
+    ctx.lineTo(lower[0].x, lower[0].y);
+    appendSmoothCurve(ctx, lower, false);
+    ctx.closePath();
+    ctx.save();
+    ctx.globalAlpha = nsfChannelMode ? .25 : .13;
+    ctx.fillStyle = ribbonGradient;
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.strokeStyle = ribbonGradient;
+    ctx.lineWidth = nsfChannelMode ? 2.2 : 1.4;
+    ctx.shadowColor = accent;
+    ctx.shadowBlur = nsfChannelMode ? 18 : 9;
+    ctx.globalAlpha = nsfChannelMode ? .9 : .48;
+    ctx.beginPath();
+    appendSmoothCurve(ctx, upper);
+    ctx.stroke();
+    ctx.globalAlpha *= .55;
+    ctx.beginPath();
+    appendSmoothCurve(ctx, lower);
+    ctx.stroke();
+    ctx.restore();
+
+    // Sparse peak particles add detail without looking like a hardware meter.
+    ctx.save();
+    ctx.fillStyle = '#fff';
+    ctx.shadowColor = artSecondary;
+    ctx.shadowBlur = 9;
+    for (let i = 3; i < VIZ_BARS; i += 8) {
+        const peakY = centerY - Math.max(2, vizPeaks[i] * maxAmplitude);
+        ctx.globalAlpha = .16 + vizPeaks[i] * .5;
+        ctx.beginPath();
+        ctx.arc(i * step, peakY, 1 + vizPeaks[i] * 1.3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
 
     vizRAF = requestAnimationFrame(vizTick);
 }
@@ -2486,11 +3520,43 @@ function formatTime(sec) {
 function game()  { return GAMES[state.currentGame]; }
 function track() { return game().tracks[state.currentTrack]; }
 
+function recordPlay(force = false) {
+    const key = gameKey();
+    const playId = `${key}::${state.currentTrack}`;
+    if (!force && state.lastCountedPlay === playId) return;
+
+    state.lastCountedPlay = playId;
+    listeningData.plays[key] = (listeningData.plays[key] || 0) + 1;
+    listeningData.lastPlayed[key] = Date.now();
+    listeningData.recent = [key, ...listeningData.recent.filter(item => item !== key)].slice(0, 40);
+    listeningData.totalPlays = (listeningData.totalPlays || 0) + 1;
+    listeningData.lastGameKey = key;
+    saveListeningData();
+    renderPersonalizedSections();
+    updateListeningSummary();
+}
+
+function toggleFavorite(index = state.currentGame) {
+    const key = gameKey(GAMES[index]);
+    if (listeningData.favorites[key]) delete listeningData.favorites[key];
+    else listeningData.favorites[key] = true;
+    saveListeningData();
+    updateFavoriteButton();
+    renderLibrary();
+    renderPersonalizedSections();
+    renderMobileLibrary();
+    updateListeningSummary();
+}
+
 async function selectGame(idx) {
+    if (!Number.isInteger(idx) || !GAMES[idx]) return;
     stop();
     state.currentGame = idx;
     state.currentTrack = 0;
     state.elapsed = 0;
+    state.lastCountedPlay = null;
+    listeningData.lastGameKey = gameKey();
+    saveListeningData();
     await ensureLoaded(idx);
     if (game().isNSF) engine.selectTrack(0);
     renderLibrary();
@@ -2504,16 +3570,16 @@ async function selectAdjacentGame(direction) {
     const resumeAfterSwitch = state.isPlaying;
     const target = (state.currentGame + direction + GAMES.length) % GAMES.length;
     state.isSwitchingGame = true;
-    dom.heroPrevAlbumBtn.disabled = true;
-    dom.heroNextAlbumBtn.disabled = true;
+    dom.previousAlbumBtn.disabled = true;
+    dom.nextAlbumBtn.disabled = true;
 
     try {
         await selectGame(target);
         if (resumeAfterSwitch) await play();
     } finally {
         state.isSwitchingGame = false;
-        dom.heroPrevAlbumBtn.disabled = false;
-        dom.heroNextAlbumBtn.disabled = false;
+        dom.previousAlbumBtn.disabled = false;
+        dom.nextAlbumBtn.disabled = false;
     }
 }
 
@@ -2521,12 +3587,16 @@ function previousGame() { return selectAdjacentGame(-1); }
 function nextGame() { return selectAdjacentGame(1); }
 
 async function selectTrack(idx) {
+    if (!Number.isInteger(idx) || !game().tracks[idx]) return;
+    const wasPlaying = state.isPlaying;
     state.currentTrack = idx;
     state.elapsed = 0;
+    state.lastCountedPlay = null;
     if (game().isNSF) engine.selectTrack(idx);
     renderTrackList();
     updateNowPlaying();
-    if (!state.isPlaying) await play();
+    if (!wasPlaying) await play();
+    else recordPlay();
 }
 
 async function play() {
@@ -2556,6 +3626,7 @@ async function play() {
     dom.albumWrap.classList.add('playing');
     updateTrackActiveState();
     startTimer();
+    recordPlay();
     return true;
 }
 
@@ -2595,12 +3666,14 @@ function nextTrack() {
         }
     }
     state.elapsed = 0;
+    state.lastCountedPlay = null;
     if (game().isNSF) engine.selectTrack(state.currentTrack);
     renderTrackList();
     updateNowPlaying();
     if (state.isPlaying) {
         if (game().isNSF) engine.play();
         startTimer();
+        recordPlay();
     }
 }
 
@@ -2613,11 +3686,13 @@ function prevTrack() {
         if (game().isNSF) engine.selectTrack(state.currentTrack);
     }
     state.elapsed = 0;
+    state.lastCountedPlay = null;
     renderTrackList();
     updateNowPlaying();
     if (state.isPlaying) {
         if (game().isNSF) engine.play();
         startTimer();
+        recordPlay();
     }
 }
 
@@ -2634,6 +3709,7 @@ function startTimer() {
             if (state.repeat === 'one') {
                 state.elapsed = 0;
                 if (game().isNSF) engine.selectTrack(state.currentTrack);
+                recordPlay(true);
             } else {
                 nextTrack();
                 return;
@@ -2647,6 +3723,8 @@ function toggleShuffle() {
     state.shuffle = !state.shuffle;
     dom.shuffleBtn.classList.toggle('active', state.shuffle);
     dom.heroShuffleBtn.classList.toggle('active', state.shuffle);
+    dom.shuffleBtn.setAttribute('aria-pressed', String(state.shuffle));
+    dom.heroShuffleBtn.setAttribute('aria-pressed', String(state.shuffle));
 }
 
 function cycleRepeat() {
@@ -2655,13 +3733,16 @@ function cycleRepeat() {
     state.repeat = modes[idx];
     dom.repeatBtn.classList.toggle('active', state.repeat !== 'none');
     dom.heroRepeatBtn.classList.toggle('active', state.repeat !== 'none');
+    dom.repeatBtn.setAttribute('aria-pressed', String(state.repeat !== 'none'));
+    dom.heroRepeatBtn.setAttribute('aria-pressed', String(state.repeat !== 'none'));
     dom.repeatBtn.title = state.repeat === 'one' ? 'Repeat One'
         : state.repeat === 'all' ? 'Repeat All' : 'Repeat';
     dom.heroRepeatBtn.title = dom.repeatBtn.title;
+    dom.heroRepeatBtn.setAttribute('aria-label', dom.repeatBtn.title);
     // Show "1" indicator for repeat-one
     if (state.repeat === 'one') {
         dom.repeatBtn.style.setProperty('--repeat-label', '"1"');
-    }
+    } else dom.repeatBtn.style.removeProperty('--repeat-label');
 }
 
 function setVolume(v) {
@@ -2710,24 +3791,197 @@ function seekPreview(ratio) {
 /* ═══════════════════════════════════════════════
    UI RENDERING
    ═══════════════════════════════════════════════ */
+function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    })[char]);
+}
+
+const deferredCoverObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const image = entry.target;
+            image.src = image.dataset.coverSrc;
+            image.removeAttribute('data-cover-src');
+            deferredCoverObserver.unobserve(image);
+        });
+    }, { rootMargin: '600px 300px' })
+    : null;
+
+function observeDeferredCovers(container) {
+    container.querySelectorAll('img[data-cover-src]').forEach(image => {
+        if (deferredCoverObserver) deferredCoverObserver.observe(image);
+        else {
+            image.src = image.dataset.coverSrc;
+            image.removeAttribute('data-cover-src');
+        }
+    });
+}
+
+function releaseDeferredCovers(container) {
+    if (!deferredCoverObserver) return;
+    container.querySelectorAll('img[data-cover-src]').forEach(image => deferredCoverObserver.unobserve(image));
+}
+
+function albumTitle(g) {
+    return g.catalogTitle || g.title;
+}
+
+function playCount(index) {
+    return listeningData.plays[gameKey(GAMES[index])] || 0;
+}
+
+function gameArtwork(g, index, className = 'game-card-art') {
+    if (g.cover) {
+        return `<div class="${className} has-cover" style="background:linear-gradient(145deg,${g.colors[1]},${g.colors[2]})"><img class="game-card-cover" data-cover-src="${escapeHTML(g.cover)}" alt="" decoding="async"></div>`;
+    }
+    return `<div class="${className}"><canvas width="64" height="64" data-art-game="${index}"></canvas></div>`;
+}
+
+function renderGameCard(index) {
+    const g = GAMES[index];
+    const active = index === state.currentGame ? ' active' : '';
+    const count = playCount(index);
+    const favorite = isFavorite(index)
+        ? '<span class="game-card-favorite" aria-label="Favorite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S4 16 4 9.8C4 6.6 6.1 5 8.4 5c1.6 0 2.9.8 3.6 2 0 0 1.5-2 3.7-2C18.1 5 20 6.7 20 9.8c0 6.2-8 10.7-8 10.7z"/></svg></span>'
+        : '';
+    const plays = count ? `<span class="game-card-play-count">${count} ${count === 1 ? 'PLAY' : 'PLAYS'}</span>` : '';
+
+    return `<button class="game-card${active}" data-game="${index}" type="button" aria-pressed="${index === state.currentGame}">
+        <div style="position:relative">${gameArtwork(g, index)}${favorite}${plays}</div>
+        <div class="game-card-title">${escapeHTML(albumTitle(g))}</div>
+        <div class="game-card-subtitle">${escapeHTML(g.publisher || g.artist)}</div>
+    </button>`;
+}
+
+function drawRenderedArtwork(container) {
+    container.querySelectorAll('canvas[data-art-game]').forEach(canvas => {
+        const index = Number(canvas.dataset.artGame);
+        const g = GAMES[index];
+        if (g) drawPixelArt(canvas, g.colors, g.seed);
+    });
+    observeDeferredCovers(container);
+}
+
+function filteredGameIndexes(view = state.libraryView) {
+    const query = state.libraryQuery.trim().toLocaleLowerCase();
+    const indexes = GAMES.map((_, index) => index).filter(index => {
+        const g = GAMES[index];
+        if (state.libraryPublisher !== 'all' && g.publisher !== state.libraryPublisher) return false;
+        if (state.libraryRegion !== 'all' && g.region !== state.libraryRegion) return false;
+        if (view === 'favorites' && !isFavorite(index)) return false;
+        if (view === 'played' && playCount(index) === 0) return false;
+        if (!query) return true;
+
+        const fields = {
+            title: albumTitle(g),
+            publisher: g.publisher || g.artist,
+            file: g.nsfName || g.file || '',
+        };
+        const haystack = state.libraryScope === 'all'
+            ? `${fields.title} ${fields.publisher} ${fields.file} ${g.region || ''}`
+            : fields[state.libraryScope] || '';
+        return haystack.toLocaleLowerCase().includes(query);
+    });
+
+    return indexes.sort((a, b) => {
+        if (view === 'played') {
+            const countDifference = playCount(b) - playCount(a);
+            if (countDifference) return countDifference;
+            const dateDifference = (listeningData.lastPlayed[gameKey(GAMES[b])] || 0)
+                - (listeningData.lastPlayed[gameKey(GAMES[a])] || 0);
+            if (dateDifference) return dateDifference;
+        }
+        return albumTitle(GAMES[a]).localeCompare(albumTitle(GAMES[b]));
+    });
+}
+
+function chooseHorizons() {
+    const recent = new Set(listeningData.recent.slice(0, 20));
+    const fresh = GAMES.map((_, index) => index).filter(index => !recent.has(gameKey(GAMES[index])));
+    const pool = fresh.length >= 12 ? fresh : GAMES.map((_, index) => index);
+    state.horizonGames = shuffleArray(pool).slice(0, 12);
+}
+
+function renderPersonalizedSections() {
+    const mostPlayed = GAMES.map((_, index) => index)
+        .filter(index => playCount(index) > 0)
+        .sort((a, b) => playCount(b) - playCount(a))
+        .slice(0, 12);
+
+    releaseDeferredCovers(dom.mostPlayedStrip);
+    releaseDeferredCovers(dom.horizonsStrip);
+    if (mostPlayed.length) {
+        dom.mostPlayedStrip.innerHTML = mostPlayed.map(renderGameCard).join('');
+        dom.mostPlayedNote.textContent = `${listeningData.totalPlays || 0} total plays`;
+    } else {
+        dom.mostPlayedStrip.innerHTML = '<div class="discovery-empty-card"><strong>Your taste starts here.</strong><span>Play an album and it will appear in Most Played.</span></div>';
+        dom.mostPlayedNote.textContent = 'Ready when you are';
+    }
+
+    if (!state.horizonGames.length) chooseHorizons();
+    dom.horizonsStrip.innerHTML = state.horizonGames.map(renderGameCard).join('');
+    drawRenderedArtwork(dom.mostPlayedStrip);
+    drawRenderedArtwork(dom.horizonsStrip);
+}
+
 function renderLibrary() {
-    dom.libraryStrip.innerHTML = GAMES.map((g, i) => {
-        const active = i === state.currentGame ? ' active' : '';
-        const pressed = i === state.currentGame ? 'true' : 'false';
+    const indexes = filteredGameIndexes();
+    releaseDeferredCovers(dom.libraryStrip);
+    dom.libraryStrip.innerHTML = indexes.map(renderGameCard).join('');
+    dom.libraryCount.textContent = `${indexes.length} ${indexes.length === 1 ? 'album' : 'albums'}`;
+    dom.emptyLibrary.hidden = indexes.length > 0;
+    drawRenderedArtwork(dom.libraryStrip);
+}
+
+function renderMobileLibrary() {
+    if (state.mobileTab === 'queue') return;
+    const view = state.mobileTab === 'favorites' ? 'favorites'
+        : state.mobileTab === 'played' ? 'played' : 'all';
+    const indexes = filteredGameIndexes(view);
+    releaseDeferredCovers(dom.mobileLibraryList);
+    dom.mobileDiscoveryPrompt.hidden = state.mobileTab !== 'library' || Boolean(state.libraryQuery);
+    dom.mobileLibraryList.innerHTML = indexes.length ? indexes.map(index => {
+        const g = GAMES[index];
+        const favorite = isFavorite(index);
         const artwork = g.cover
-            ? `<div class="game-card-art has-cover" style="background-image:linear-gradient(rgba(8,8,11,.48),rgba(8,8,11,.48)),url('${g.cover}')"><img class="game-card-cover" src="${g.cover}" alt="" loading="lazy" decoding="async"></div>`
-            : `<div class="game-card-art"><canvas width="64" height="64" data-card="${i}"></canvas></div>`;
-        return `<button class="game-card${active}" data-game="${i}" type="button" aria-pressed="${pressed}">
-            ${artwork}
-            <div class="game-card-title">${g.title}</div>
+            ? `<img data-cover-src="${escapeHTML(g.cover)}" alt="" decoding="async">`
+            : `<canvas width="58" height="58" data-art-game="${index}"></canvas>`;
+        const details = state.mobileTab === 'played'
+            ? `${playCount(index)} ${playCount(index) === 1 ? 'play' : 'plays'} · ${g.publisher || g.artist}`
+            : `${g.publisher || g.artist} · ${g.region || 'NSF'} · ${g.nsfName || 'Imported file'}`;
+        return `<div class="mobile-library-row${index === state.currentGame ? ' current' : ''}" style="--row-primary:${g.colors[1]};--row-secondary:${g.colors[2]}">
+            <button class="mobile-library-main" type="button" data-game="${index}">
+                <span class="mobile-library-art">${artwork}</span>
+                <span class="mobile-library-copy"><strong>${escapeHTML(albumTitle(g))}</strong><span>${escapeHTML(details)}</span></span>
+            </button>
+            <button class="mobile-favorite-toggle${favorite ? ' active' : ''}" type="button" data-favorite-game="${index}" aria-label="${favorite ? 'Remove from' : 'Add to'} favorites" aria-pressed="${favorite}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S4 16 4 9.8C4 6.6 6.1 5 8.4 5c1.6 0 2.9.8 3.6 2 0 0 1.5-2 3.7-2C18.1 5 20 6.7 20 9.8c0 6.2-8 10.7-8 10.7z"/></svg>
+            </button>
+        </div>`;
+    }).join('') : '<div class="mobile-empty">Nothing matches this view yet.</div>';
+    drawRenderedArtwork(dom.mobileLibraryList);
+}
+
+function renderMobileUpcomingGames() {
+    const indexes = [1, 2, 3, 4].map(offset => (state.currentGame + offset) % GAMES.length);
+    releaseDeferredCovers(dom.mobileUpcomingList);
+    dom.mobileUpcomingList.innerHTML = indexes.map(index => {
+        const g = GAMES[index];
+        const artwork = g.cover
+            ? `<img data-cover-src="${escapeHTML(g.cover)}" alt="" decoding="async">`
+            : `<canvas width="40" height="40" data-art-game="${index}"></canvas>`;
+        return `<button class="mobile-upcoming-row" type="button" data-upcoming-game="${index}" style="--up-primary:${g.colors[1]};--up-secondary:${g.colors[2]}">
+            <span class="mobile-upcoming-art">${artwork}</span>
+            <span class="mobile-upcoming-copy">
+                <strong>${escapeHTML(albumTitle(g))}</strong>
+                <span>${escapeHTML(g.publisher || g.artist)} · ${escapeHTML(g.region || 'NSF')}</span>
+            </span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
         </button>`;
     }).join('');
-
-    // Draw card art
-    GAMES.forEach((g, i) => {
-        const c = dom.libraryStrip.querySelector(`canvas[data-card="${i}"]`);
-        if (c) drawPixelArt(c, g.colors, g.seed);
-    });
+    drawRenderedArtwork(dom.mobileUpcomingList);
 }
 
 function renderTrackList() {
@@ -2745,6 +3999,15 @@ function renderTrackList() {
             <div class="track-time">${t.time}</div>
         </button>`;
     }).join('');
+
+    dom.mobileQueueAlbum.textContent = albumTitle(g);
+    dom.mobileQueueCount.textContent = `${g.tracks.length} ${g.tracks.length === 1 ? 'track' : 'tracks'}`;
+    dom.mobileTrackList.innerHTML = g.tracks.map((t, i) => `
+        <button class="mobile-track-row${i === state.currentTrack ? ' active' : ''}" type="button" data-mobile-track="${i}" aria-current="${i === state.currentTrack}">
+            <span>${String(i + 1).padStart(2, '0')}</span>
+            <strong>${escapeHTML(t.name)}</strong>
+            <time>${escapeHTML(t.time)}</time>
+        </button>`).join('');
 }
 
 function updateTrackActiveState() {
@@ -2752,6 +4015,24 @@ function updateTrackActiveState() {
         row.classList.toggle('active', i === state.currentTrack);
         row.classList.toggle('is-playing', i === state.currentTrack && state.isPlaying);
     });
+    dom.mobileTrackList.querySelectorAll('.mobile-track-row').forEach((row, i) => {
+        row.classList.toggle('active', i === state.currentTrack);
+        row.setAttribute('aria-current', String(i === state.currentTrack));
+    });
+}
+
+function updateFavoriteButton() {
+    const favorite = isFavorite(state.currentGame);
+    dom.favoriteBtn.classList.toggle('active', favorite);
+    dom.favoriteBtn.setAttribute('aria-pressed', String(favorite));
+    dom.favoriteBtn.setAttribute('aria-label', favorite ? 'Remove album from favorites' : 'Add album to favorites');
+    dom.favoriteBtn.querySelector('span').textContent = favorite ? 'Favorited' : 'Favorite';
+}
+
+function updateListeningSummary() {
+    const favoriteCount = Object.keys(listeningData.favorites).length;
+    const plays = listeningData.totalPlays || 0;
+    dom.listeningSummary.textContent = `${plays} ${plays === 1 ? 'play' : 'plays'} · ${favoriteCount} ${favoriteCount === 1 ? 'favorite' : 'favorites'} · saved locally`;
 }
 
 function updateNowPlaying() {
@@ -2785,6 +4066,9 @@ function updateNowPlaying() {
         dom.miniArt.classList.add('has-cover');
         dom.miniCover.hidden = false;
         dom.miniCover.src = g.cover;
+        dom.heroProgressCover.hidden = false;
+        dom.heroProgressCover.src = g.cover;
+        dom.heroProgressCanvas.hidden = true;
     } else {
         dom.albumWrap.classList.remove('has-cover');
         dom.coverArt.hidden = true;
@@ -2797,8 +4081,14 @@ function updateNowPlaying() {
         dom.miniArt.classList.remove('has-cover');
         dom.miniCover.hidden = true;
         dom.miniCover.removeAttribute('src');
+        dom.heroProgressCover.hidden = true;
+        dom.heroProgressCover.removeAttribute('src');
+        dom.heroProgressCanvas.hidden = false;
         drawPixelArt(dom.artCanvas, g.colors, g.seed);
+        drawPixelArt(dom.heroProgressCanvas, g.colors, g.seed);
     }
+    renderMobileUpcomingGames();
+    updateFavoriteButton();
     updateProgress();
 }
 
@@ -2811,6 +4101,94 @@ function updateProgress() {
     dom.heroElapsed.textContent = formatTime(state.elapsed);
 }
 
+function populatePublisherFilters() {
+    const publishers = [...new Set(GAMES.map(g => g.publisher).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b));
+    const options = '<option value="all">All publishers</option>'
+        + publishers.map(publisher => `<option value="${escapeHTML(publisher)}">${escapeHTML(publisher)}</option>`).join('');
+    dom.publisherFilter.innerHTML = options;
+    dom.mobilePublisher.innerHTML = options;
+}
+
+function syncDiscoveryControls() {
+    dom.discoverSearch.value = state.libraryQuery;
+    dom.mobileSearch.value = state.libraryQuery;
+    dom.discoverScope.value = state.libraryScope;
+    dom.mobileScope.value = state.libraryScope;
+    dom.publisherFilter.value = state.libraryPublisher;
+    dom.mobilePublisher.value = state.libraryPublisher;
+    dom.regionFilter.value = state.libraryRegion;
+    dom.mobileRegion.value = state.libraryRegion;
+    dom.desktopFilterChips.querySelectorAll('[data-view]').forEach(button => {
+        button.classList.toggle('active', button.dataset.view === state.libraryView);
+    });
+}
+
+function refreshFilteredLibraries() {
+    syncDiscoveryControls();
+    renderLibrary();
+    renderMobileLibrary();
+}
+
+function setMobileTab(tab) {
+    state.mobileTab = tab;
+    dom.mobileDrawer.querySelectorAll('[data-mobile-tab]').forEach(button => {
+        const active = button.dataset.mobileTab === tab;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', String(active));
+    });
+    const queue = tab === 'queue';
+    dom.mobileLibraryPane.hidden = queue;
+    dom.mobileQueuePane.hidden = !queue;
+    if (queue) renderTrackList();
+    else renderMobileLibrary();
+}
+
+function openMobileDrawer(tab = state.mobileTab) {
+    setMobileTab(tab);
+    dom.mobileDrawerBackdrop.hidden = false;
+    dom.mobileDrawer.setAttribute('aria-hidden', 'false');
+    dom.mobileMenuBtn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('drawer-open');
+    requestAnimationFrame(() => {
+        dom.mobileDrawerBackdrop.classList.add('open');
+        dom.mobileDrawer.classList.add('open');
+    });
+}
+
+function closeMobileDrawer() {
+    dom.mobileDrawerBackdrop.classList.remove('open');
+    dom.mobileDrawer.classList.remove('open');
+    dom.mobileDrawer.setAttribute('aria-hidden', 'true');
+    dom.mobileMenuBtn.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('drawer-open');
+    window.setTimeout(() => {
+        if (!dom.mobileDrawer.classList.contains('open')) dom.mobileDrawerBackdrop.hidden = true;
+    }, 340);
+}
+
+function exportListeningData() {
+    const exportData = {
+        ...listeningData,
+        exportedAt: new Date().toISOString(),
+        albums: GAMES.filter((g, index) => playCount(index) || isFavorite(index)).map((g, index) => ({
+            title: albumTitle(g),
+            publisher: g.publisher,
+            file: g.file,
+            plays: playCount(index),
+            favorite: isFavorite(index),
+            lastPlayed: listeningData.lastPlayed[gameKey(g)] || null,
+        })),
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `nesamp-listening-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
 /* ═══════════════════════════════════════════════
    EVENT LISTENERS
    ═══════════════════════════════════════════════ */
@@ -2818,15 +4196,84 @@ dom.playBtn.addEventListener('click', togglePlay);
 dom.heroPlayBtn.addEventListener('click', togglePlay);
 dom.stopBtn.addEventListener('click', stop);
 dom.prevBtn.addEventListener('click', prevTrack);
-dom.heroPrevAlbumBtn.addEventListener('click', previousGame);
+dom.heroPrevBtn.addEventListener('click', prevTrack);
 dom.nextBtn.addEventListener('click', nextTrack);
-dom.heroNextAlbumBtn.addEventListener('click', nextGame);
+dom.heroNextBtn.addEventListener('click', nextTrack);
+dom.previousAlbumBtn.addEventListener('click', previousGame);
+dom.nextAlbumBtn.addEventListener('click', nextGame);
+dom.favoriteBtn.addEventListener('click', () => toggleFavorite());
 dom.shuffleBtn.addEventListener('click', toggleShuffle);
 dom.heroShuffleBtn.addEventListener('click', toggleShuffle);
 dom.repeatBtn.addEventListener('click', cycleRepeat);
 dom.heroRepeatBtn.addEventListener('click', cycleRepeat);
 dom.muteBtn.addEventListener('click', toggleMute);
 dom.loadBtn.addEventListener('click', () => dom.fileInput.click());
+dom.mobileMenuBtn.addEventListener('click', () => openMobileDrawer('library'));
+dom.mobileDrawerClose.addEventListener('click', closeMobileDrawer);
+dom.mobileDrawerBackdrop.addEventListener('click', closeMobileDrawer);
+dom.exportDataBtn.addEventListener('click', exportListeningData);
+dom.refreshHorizonsBtn.addEventListener('click', () => {
+    chooseHorizons();
+    renderPersonalizedSections();
+});
+dom.mobileSurpriseBtn.addEventListener('click', async () => {
+    chooseHorizons();
+    const index = state.horizonGames[0];
+    if (Number.isInteger(index)) await selectGame(index);
+    closeMobileDrawer();
+});
+dom.mobileUpNextSeeAll.addEventListener('click', () => openMobileDrawer('library'));
+dom.mobileUpcomingList.addEventListener('click', async event => {
+    const row = event.target.closest('[data-upcoming-game]');
+    if (!row) return;
+    const resumeAfterSwitch = state.isPlaying;
+    await selectGame(parseInt(row.dataset.upcomingGame));
+    if (resumeAfterSwitch) await play();
+});
+
+dom.mobileDrawer.querySelector('.drawer-tabs').addEventListener('click', event => {
+    const tab = event.target.closest('[data-mobile-tab]');
+    if (tab) setMobileTab(tab.dataset.mobileTab);
+});
+
+dom.discoverSearch.addEventListener('input', event => {
+    state.libraryQuery = event.target.value;
+    refreshFilteredLibraries();
+});
+dom.mobileSearch.addEventListener('input', event => {
+    state.libraryQuery = event.target.value;
+    refreshFilteredLibraries();
+});
+dom.discoverScope.addEventListener('change', event => {
+    state.libraryScope = event.target.value;
+    refreshFilteredLibraries();
+});
+dom.mobileScope.addEventListener('change', event => {
+    state.libraryScope = event.target.value;
+    refreshFilteredLibraries();
+});
+dom.publisherFilter.addEventListener('change', event => {
+    state.libraryPublisher = event.target.value;
+    refreshFilteredLibraries();
+});
+dom.mobilePublisher.addEventListener('change', event => {
+    state.libraryPublisher = event.target.value;
+    refreshFilteredLibraries();
+});
+dom.regionFilter.addEventListener('change', event => {
+    state.libraryRegion = event.target.value;
+    refreshFilteredLibraries();
+});
+dom.mobileRegion.addEventListener('change', event => {
+    state.libraryRegion = event.target.value;
+    refreshFilteredLibraries();
+});
+dom.desktopFilterChips.addEventListener('click', event => {
+    const chip = event.target.closest('[data-view]');
+    if (!chip) return;
+    state.libraryView = chip.dataset.view;
+    refreshFilteredLibraries();
+});
 
 // A stale or missing manifest entry falls back cleanly to generated art.
 dom.coverArt.addEventListener('error', () => {
@@ -2850,11 +4297,32 @@ dom.trackList.addEventListener('click', (e) => {
     const row = e.target.closest('.track-row');
     if (row) selectTrack(parseInt(row.dataset.track));
 });
+dom.mobileTrackList.addEventListener('click', async (e) => {
+    const row = e.target.closest('[data-mobile-track]');
+    if (!row) return;
+    await selectTrack(parseInt(row.dataset.mobileTrack));
+    closeMobileDrawer();
+});
 
-// Library clicks
-dom.libraryStrip.addEventListener('click', (e) => {
+// Desktop discovery cards share one selection handler.
+function handleLibraryClick(e) {
     const card = e.target.closest('.game-card');
     if (card) selectGame(parseInt(card.dataset.game));
+}
+dom.libraryStrip.addEventListener('click', handleLibraryClick);
+dom.mostPlayedStrip.addEventListener('click', handleLibraryClick);
+dom.horizonsStrip.addEventListener('click', handleLibraryClick);
+
+dom.mobileLibraryList.addEventListener('click', async event => {
+    const favorite = event.target.closest('[data-favorite-game]');
+    if (favorite) {
+        toggleFavorite(parseInt(favorite.dataset.favoriteGame));
+        return;
+    }
+    const album = event.target.closest('[data-game]');
+    if (!album) return;
+    await selectGame(parseInt(album.dataset.game));
+    closeMobileDrawer();
 });
 
 // Unified pointer helper — reads clientX from mouse or touch events
@@ -2979,9 +4447,20 @@ document.addEventListener('drop', async (e) => {
 
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
+    if (e.code === 'Escape' && dom.mobileDrawer.classList.contains('open')) {
+        closeMobileDrawer();
+        return;
+    }
     if (e.target.tagName === 'INPUT') return;
     switch (e.code) {
         case 'Space':     e.preventDefault(); togglePlay(); break;
+        case 'Slash':
+            e.preventDefault();
+            if (window.matchMedia('(max-width: 760px)').matches) {
+                openMobileDrawer('library');
+                window.setTimeout(() => dom.mobileSearch.focus(), 360);
+            } else dom.discoverSearch.focus();
+            break;
         case 'ArrowRight': nextTrack(); break;
         case 'ArrowLeft':  prevTrack(); break;
         case 'ArrowUp':    e.preventDefault(); setVolume(state.volume + 0.05); break;
@@ -3007,9 +4486,15 @@ function resizeVisualizer() {
 window.addEventListener('resize', resizeVisualizer);
 
 function init() {
+    populatePublisherFilters();
+    chooseHorizons();
+    syncDiscoveryControls();
     renderLibrary();
+    renderPersonalizedSections();
+    renderMobileLibrary();
     renderTrackList();
     updateNowPlaying();
+    updateListeningSummary();
     setVolume(state.volume);
     resizeVisualizer();
     vizTick();

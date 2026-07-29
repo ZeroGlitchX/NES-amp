@@ -410,7 +410,6 @@ images/nes_box_art/track-and-field-usa.webp
 images/nes_box_art/trog-usa.webp
 images/nes_box_art/twin-cobra-usa.webp
 images/nes_box_art/twin-eagle-usa.webp
-images/nes_box_art/twinbee-3-poko-poko-dai-maou-jp.webp
 images/nes_box_art/ultima-quest-of-the-avatar-usa.webp
 images/nes_box_art/ultima-warriors-of-destiny-usa.webp
 images/nes_box_art/ultimate-air-combat-usa.webp

@@ -186,7 +186,6 @@ Famicom | Toukon Club | NES-Gamemusic/Famicom/Jaleco/Toukon_Club.nsf
 Famicom | Tower of Babel | NES-Gamemusic/Famicom/Namco/Tower_of_Babel.nsf
 Famicom | Tower of Druaga | NES-Gamemusic/Famicom/Namco/Tower_of_Druaga.nsf
 Famicom | Transformers Convoy no Nazo | NES-Gamemusic/Famicom/Takara/Transformers_Convoy_no_Nazo.nsf
-Famicom | Twinbee 3 | NES-Gamemusic/Famicom/Konami/twinbee-3-poko-poko-dai-maou-jp.nsf
 Famicom | Uchuu Keibitai SDF | NES-Gamemusic/Famicom/Hal_Lab/Uchuu_Keibitai_SDF.nsf
 Famicom | Ushio to Tora | NES-Gamemusic/Famicom/Yutaka/Ushio_to_Tora.nsf
 Famicom | Valkyrie No Bouken | NES-Gamemusic/Famicom/Namco/Valkyrie_No_Bouken.nsf

@@ -10,7 +10,10 @@ A web-based NES chiptune music player that runs entirely in the browser. Loads `
 
 - **Full 6502 CPU emulation** — all 151 official opcodes + common unofficial ones
 - **Accurate NES APU** — 2 pulse channels, triangle, noise, DMC with proper frame counter timing
-- **506-game library** — randomly rotated on each page load, lazy-loaded on click
+- **Complete 506-game discovery library** — searchable by game, publisher, system, or NSF filename and lazy-loaded on click
+- **Personalized discovery** — persistent favorites, play counts, recents, Most Played, and randomized “Expand Your Horizons” picks
+- **Mobile-first player** — single-screen playback with a slide-in Discover/Favorites/Most Played/Up Next library
+- **Portable listening data** — browser-local versioned JSON with one-tap export
 - **Drag & drop** — load any `.nsf` file directly into the player
 - **Silence detection** — automatically scans track durations by running the emulator non-realtime
 - **Improved output tone** — cycle-averaged sample generation + NES-inspired filter chain (HP 37Hz, HP 120Hz, LP 15kHz)
@@ -26,7 +29,7 @@ A web-based NES chiptune music player that runs entirely in the browser. Loads `
 ```
 index.htm              UI, player logic, library browser (single-file app)
 src/
-  cover-art.js          Maps soundtrack titles to confirmed local WebP cover art
+  cover-art.js         Maps soundtrack titles to confirmed local WebP cover art
   nsf-parser.js        Parses the 128-byte NSF header + PRG ROM data
   cpu6502.js           MOS 6502 CPU — registers, addressing modes, all opcodes
   apu.js               NES APU — pulse, triangle, noise, DMC, frame counter, mixer
@@ -74,7 +77,13 @@ Serve the project directory with any static HTTP server:
 Just place the directory in your HTML server root
 ```
 
-Open `http://localhost/nes-amp/` in a browser. Click any library card to load and play, or drag & drop a `.nsf` file onto the player.
+Open `http://localhost/nes-amp/` in a browser. Search or browse Discover to load an album, or drag & drop a `.nsf` file onto the player. On mobile, use **Browse** to open the slide-in library and track queue.
+
+### Listening data
+
+Favorites, play counts, recent albums, and the last selected album are saved as
+versioned JSON in browser `localStorage` under `nesamp-listening-v1`. Use
+**Export JSON** in the mobile Browse menu to download a portable copy.
 
 ### NSF files
 
