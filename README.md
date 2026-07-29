@@ -26,6 +26,7 @@ A web-based NES chiptune music player that runs entirely in the browser. Loads `
 ```
 index.htm              UI, player logic, library browser (single-file app)
 src/
+  cover-art.js          Maps soundtrack titles to confirmed local WebP cover art
   nsf-parser.js        Parses the 128-byte NSF header + PRG ROM data
   cpu6502.js           MOS 6502 CPU — registers, addressing modes, all opcodes
   apu.js               NES APU — pulse, triangle, noise, DMC, frame counter, mixer
@@ -33,7 +34,20 @@ src/
   nsf-engine.js        Ties CPU + APU + Memory together, drives Web Audio output
   audio-worklet.js     AudioWorklet processor — consumes sample buffers from the engine
   games-library.js     506 NSF file entries (auto-generated from NES-Gamemusic directory)
+images/nes_box_art/    Optional WebP game covers with generated-art fallback
+audits/                Lists unmatched soundtracks and cover-art files
 ```
+
+### Cover-art naming
+
+Matched NSF and WebP files use the same lowercase kebab-case stem, even though
+they live in different directories. For example, `mega-man.nsf` pairs with
+`mega-man.webp`. Confirmed pairs are recorded in `src/cover-art.js`.
+
+The unmatched pools are listed in:
+
+- `audits/unmatched-soundtracks.txt`
+- `audits/unmatched-cover-art.txt`
 
 ### How it works
 

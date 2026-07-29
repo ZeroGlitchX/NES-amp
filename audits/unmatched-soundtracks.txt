@@ -1,0 +1,252 @@
+# Soundtracks without matched cover art (248)
+# Format: region | title | NSF path
+# Add or identify a cover, then use the same lowercase kebab-case filename stem.
+
+Famicom | 1999 | NES-Gamemusic/Famicom/Coconuts_Japan/1999.nsf
+Famicom | After Burner II | NES-Gamemusic/Famicom/Sunsoft/After_Burner_II.nsf
+Famicom | Ai Senshi Nicol | NES-Gamemusic/Famicom/Konami/Ai_Senshi_Nicol.nsf
+Famicom | Akagawa Jirou no Yuurei Ressha | NES-Gamemusic/Famicom/Enix/Akagawa_Jirou_no_Yuurei_Ressha.nsf
+Famicom | Akai Yousai | NES-Gamemusic/Famicom/Konami/Akai_Yousai.nsf
+Famicom | Algos no Senshi | NES-Gamemusic/Famicom/Tecmo/Algos_no_Senshi.nsf
+Famicom | Almana no Kiseki | NES-Gamemusic/Famicom/Konami/Almana_no_Kiseki.nsf
+Famicom | America Oudan Ultra Quiz | NES-Gamemusic/Famicom/Tomy/America_Oudan_Ultra_Quiz.nsf
+Famicom | Antarctic Adventure | NES-Gamemusic/Famicom/Konami/Antarctic_Adventure.nsf
+Famicom | Argus | NES-Gamemusic/Famicom/Jaleco/Argus.nsf
+Famicom | Armadillo | NES-Gamemusic/Famicom/IGS/Armadillo.nsf
+Famicom | Armed Dragon Fantasy Villgust | NES-Gamemusic/Famicom/Angel/Armed_Dragon_Fantasy_Villgust.nsf
+Famicom | Astro Robo Sasa | NES-Gamemusic/Famicom/Ascii/Astro_Robo_Sasa.nsf
+Famicom | Atlantis no Nazo | NES-Gamemusic/Famicom/Sunsoft/Atlantis_no_Nazo.nsf
+Famicom | B Wing | NES-Gamemusic/Famicom/Data_East/B_Wing.nsf
+Famicom | Batsu and Terry | NES-Gamemusic/Famicom/Use/Batsu_and_Terry.nsf
+Famicom | Big Challenge Dogfight Spirit | NES-Gamemusic/Famicom/Jaleco/Big_Challenge_Dogfight_Spirit.nsf
+Famicom | Bikkuriman World | NES-Gamemusic/Famicom/Hudson_Soft/Bikkuriman_World.nsf
+Famicom | Bio Miracle Boku tte Upa | NES-Gamemusic/Famicom/Konami/Bio_Miracle_Boku_tte_Upa.nsf
+Famicom | Bio Senshi Dan | NES-Gamemusic/Famicom/Jaleco/Bio_Senshi_Dan.nsf
+Famicom | Bokosuka Wars | NES-Gamemusic/Famicom/Ascii/Bokosuka_Wars.nsf
+Famicom | Boku Dracula Kun | NES-Gamemusic/Famicom/Konami/Boku_Dracula_Kun.nsf
+Famicom | BPS Tetris | NES-Gamemusic/Famicom/BPS/BPS_Tetris.nsf
+Famicom | Captain Tsubasa Vol2 | NES-Gamemusic/Famicom/Tecmo/Captain_Tsubasa_Vol2.nsf
+Famicom | Challenger | NES-Gamemusic/Famicom/Hudson_Soft/Challenger.nsf
+Famicom | Chaos World | NES-Gamemusic/Famicom/Natsume/Chaos_World.nsf
+Famicom | Chase HQ | NES-Gamemusic/Famicom/Taito/Chase_HQ.nsf
+Famicom | Chou Jikuu Yousai Macross | NES-Gamemusic/Famicom/Namco/Chou_Jikuu_Yousai_Macross.nsf
+Famicom | Choujin Sentai Jetman | NES-Gamemusic/Famicom/Angel/Choujin_Sentai_Jetman.nsf
+Famicom | Chugoku Jangshi Story Tongpoo | NES-Gamemusic/Famicom/Natsume/Chugoku_Jangshi_Story_Tongpoo.nsf
+Famicom | Cocoron | NES-Gamemusic/Famicom/Takeru/Cocoron.nsf
+Famicom | Cosmic Wars | NES-Gamemusic/Famicom/Konami/Cosmic_Wars.nsf
+Famicom | Cosmo Police Galivan | NES-Gamemusic/Famicom/Nichibutsu/Cosmo_Police_Galivan.nsf
+Famicom | Crisis Force | NES-Gamemusic/Famicom/Konami/Crisis_Force.nsf
+Famicom | Daikaijuu Deburas | NES-Gamemusic/Famicom/Data_East/Daikaijuu_Deburas.nsf
+Famicom | Daisenryaku | NES-Gamemusic/Famicom/Bothtec/Daisenryaku.nsf
+Famicom | Daiva | NES-Gamemusic/Famicom/Toshiba_EMI/Daiva.nsf
+Famicom | Dark Lord | NES-Gamemusic/Famicom/Data_East/Dark_Lord.nsf
+Famicom | Devil World | NES-Gamemusic/Famicom/Nintendo/Devil_World.nsf
+Famicom | Disk System BIOS | NES-Gamemusic/Famicom/Nintendo/Disk_System_BIOS.nsf
+Famicom | Dodge Danpei | NES-Gamemusic/Famicom/Sunsoft/Dodge_Danpei.nsf
+Famicom | Dodge Danpei 2 | NES-Gamemusic/Famicom/Sunsoft/Dodge_Danpei_2.nsf
+Famicom | Doki Doki Yuuenchi | NES-Gamemusic/Famicom/Misc/Doki_Doki_Yuuenchi.nsf
+Famicom | Don Doko Don | NES-Gamemusic/Famicom/Taito/Don_Doko_Don.nsf
+Famicom | Don Doko Don 2 | NES-Gamemusic/Famicom/Taito/Don_Doko_Don_2.nsf
+Famicom | Doraemon | NES-Gamemusic/Famicom/Hudson_Soft/Doraemon.nsf
+Famicom | Doraemon Gigzombie no Gyakushuu | NES-Gamemusic/Famicom/Epoch/Doraemon_Gigzombie_no_Gyakushuu.nsf
+Famicom | Downtown Nekketsu Koushinkyoku | NES-Gamemusic/Famicom/Technos/Downtown_Nekketsu_Koushinkyoku.nsf
+Famicom | Dragon Ball 2 | NES-Gamemusic/Famicom/Bandai/Dragon_Ball_2.nsf
+Famicom | Dragon Ball 3 | NES-Gamemusic/Famicom/Bandai/Dragon_Ball_3.nsf
+Famicom | Dragon Buster | NES-Gamemusic/Famicom/Namco/Dragon_Buster.nsf
+Famicom | Dragon Buster II | NES-Gamemusic/Famicom/Namco/Dragon_Buster_II.nsf
+Famicom | Dragon Scroll | NES-Gamemusic/Famicom/Konami/Dragon_Scroll.nsf
+Famicom | Erika to Satoru no Yumebouken | NES-Gamemusic/Famicom/Namco/Erika_to_Satoru_no_Yumebouken.nsf
+Famicom | Esper Dream | NES-Gamemusic/Famicom/Konami/Esper_Dream.nsf
+Famicom | Esper Dream 2 | NES-Gamemusic/Famicom/Konami/Esper_Dream_2.nsf
+Famicom | Exciting Basket | NES-Gamemusic/Famicom/Konami/Exciting_Basket.nsf
+Famicom | F1 Race | NES-Gamemusic/Famicom/Nintendo/F1_Race.nsf
+Famicom | F1 Sensation | NES-Gamemusic/Famicom/Konami/F1_Sensation.nsf
+Famicom | Falsion | NES-Gamemusic/Famicom/Konami/Falsion.nsf
+Famicom | Famicom Tantei Club | NES-Gamemusic/Famicom/Nintendo/Famicom_Tantei_Club.nsf
+Famicom | Famicom Tantei Club 2 | NES-Gamemusic/Famicom/Nintendo/Famicom_Tantei_Club_2.nsf
+Famicom | Famicom Wars | NES-Gamemusic/Famicom/Nintendo/Famicom_Wars.nsf
+Famicom | Family Circuit | NES-Gamemusic/Famicom/Namco/Family_Circuit.nsf
+Famicom | Fantasy Zone 2 | NES-Gamemusic/Famicom/Sunsoft/Fantasy_Zone_2.nsf
+Famicom | Fantasy Zone FC | NES-Gamemusic/Famicom/Sunsoft/Fantasy_Zone_FC.nsf
+Famicom | Final Fantasy 2 | NES-Gamemusic/Famicom/Square/Final_Fantasy_2.nsf
+Famicom | Final Fantasy 3 | NES-Gamemusic/Famicom/Square/Final_Fantasy_3.nsf
+Famicom | Final Lap | NES-Gamemusic/Famicom/Namco/Final_Lap.nsf
+Famicom | Final Mission | NES-Gamemusic/Famicom/Natsume/Final_Mission.nsf
+Famicom | Fire Emblem | NES-Gamemusic/Famicom/Nintendo/Fire_Emblem.nsf
+Famicom | Fire Emblem Gaiden | NES-Gamemusic/Famicom/Nintendo/Fire_Emblem_Gaiden.nsf
+Famicom | Flappy | NES-Gamemusic/Famicom/db_Soft/Flappy.nsf
+Famicom | Ganbare Goemon | NES-Gamemusic/Famicom/Konami/Ganbare_Goemon.nsf
+Famicom | Ganbare Goemon 2 | NES-Gamemusic/Famicom/Konami/Ganbare_Goemon_2.nsf
+Famicom | Gegege No Kitarou 2 | NES-Gamemusic/Famicom/Bandai/Gegege_No_Kitarou_2.nsf
+Famicom | Getsufuu Maden | NES-Gamemusic/Famicom/Konami/Getsufuu_Maden.nsf
+Famicom | Gimmick | NES-Gamemusic/Famicom/Sunsoft/Gimmick.nsf
+Famicom | Goonies | NES-Gamemusic/Famicom/Konami/Goonies.nsf
+Famicom | Gorilla Man | NES-Gamemusic/Famicom/Yonezawa/Gorilla_Man.nsf
+Famicom | Hanjuku Hero | NES-Gamemusic/Famicom/Square/Hanjuku_Hero.nsf
+Famicom | Hebereke | NES-Gamemusic/Famicom/Sunsoft/Hebereke.nsf
+Famicom | Heisei Tensai Bakabon | NES-Gamemusic/Famicom/Namco/Heisei_Tensai_Bakabon.nsf
+Famicom | Hello Kitty World | NES-Gamemusic/Famicom/Character_Soft/Hello_Kitty_World.nsf
+Famicom | Hercules no Eikou | NES-Gamemusic/Famicom/Data_East/Hercules_no_Eikou.nsf
+Famicom | Hercules no Eikou 2 | NES-Gamemusic/Famicom/Data_East/Hercules_no_Eikou_2.nsf
+Famicom | Hi no Tori | NES-Gamemusic/Famicom/Konami/Hi_no_Tori.nsf
+Famicom | Hyaku no Sekai no Monogatari | NES-Gamemusic/Famicom/Ask_Kodansha/Hyaku_no_Sekai_no_Monogatari.nsf
+Famicom | Ice Climber FDS | NES-Gamemusic/Famicom/Nintendo/Ice_Climber_FDS.nsf
+Famicom | Idol Hakkenden | NES-Gamemusic/Famicom/Towa_Chiki/Idol_Hakkenden.nsf
+Famicom | Insector X | NES-Gamemusic/Famicom/Taito/Insector_X.nsf
+Famicom | Itadaki Street | NES-Gamemusic/Famicom/Ascii/Itadaki_Street.nsf
+Famicom | J League Fighting Soccer | NES-Gamemusic/Famicom/IGS/J_League_Fighting_Soccer.nsf
+Famicom | Jesus | NES-Gamemusic/Famicom/King_Records/Jesus.nsf
+Famicom | Joy Mecha Fight | NES-Gamemusic/Famicom/Nintendo/Joy_Mecha_Fight.nsf
+Famicom | Just Breed | NES-Gamemusic/Famicom/Enix/Just_Breed.nsf
+Famicom | Kai no Bouken | NES-Gamemusic/Famicom/Namco/Kai_no_Bouken.nsf
+Famicom | Kaijuu Monogatari | NES-Gamemusic/Famicom/Namco/Kaijuu_Monogatari.nsf
+Famicom | Kamen Rider Club | NES-Gamemusic/Famicom/Bandai/Kamen_Rider_Club.nsf
+Famicom | Keru Naguuru | NES-Gamemusic/Famicom/Namco/Keru_Naguuru.nsf
+Famicom | Kiken na Futari | NES-Gamemusic/Famicom/Data_East/Kiken_na_Futari.nsf
+Famicom | KikiKaikai | NES-Gamemusic/Famicom/Taito/KikiKaikai.nsf
+Famicom | King Kong 2 | NES-Gamemusic/Famicom/Konami/King_Kong_2.nsf
+Famicom | King of Kings | NES-Gamemusic/Famicom/Namco/King_of_Kings.nsf
+Famicom | Kunio no Jidaigekidayo | NES-Gamemusic/Famicom/Technos/Kunio_no_Jidaigekidayo.nsf
+Famicom | Kyattou Ninden Teyande | NES-Gamemusic/Famicom/Tecmo/Kyattou_Ninden_Teyande.nsf
+Famicom | Labyrinth | NES-Gamemusic/Famicom/Tokuma_Shoten/Labyrinth.nsf
+Famicom | Lagrange Point | NES-Gamemusic/Famicom/Konami/Lagrange_Point.nsf
+Famicom | Lasalle Ishii no Childs Quest | NES-Gamemusic/Famicom/Namco/Lasalle_Ishii_no_Childs_Quest.nsf
+Famicom | Last Armageddon | NES-Gamemusic/Famicom/Bandai/Last_Armageddon.nsf
+Famicom | Link no Bouken | NES-Gamemusic/Famicom/Nintendo/Link_no_Bouken.nsf
+Famicom | Madara | NES-Gamemusic/Famicom/Konami/Madara.nsf
+Famicom | Majin Eiyuuden Wataru Gaiden | NES-Gamemusic/Famicom/Hudson_Soft/Majin_Eiyuuden_Wataru_Gaiden.nsf
+Famicom | Makaijima | NES-Gamemusic/Famicom/Capcom/Makaijima.nsf
+Famicom | Mappy Kids | NES-Gamemusic/Famicom/Namco/Mappy_Kids.nsf
+Famicom | Mario Open Golf | NES-Gamemusic/Famicom/Nintendo/Mario_Open_Golf.nsf
+Famicom | Maten Douji | NES-Gamemusic/Famicom/Asmik/Maten_Douji.nsf
+Famicom | Maze of Galious 2 | NES-Gamemusic/Famicom/Konami/Maze_of_Galious_2.nsf
+Famicom | Megami Tensei | NES-Gamemusic/Famicom/Namco/Megami_Tensei.nsf
+Famicom | Megami Tensei II | NES-Gamemusic/Famicom/Namco/Megami_Tensei_II.nsf
+Famicom | Meikyuu Jiin Dababa | NES-Gamemusic/Famicom/Konami/Meikyuu_Jiin_Dababa.nsf
+Famicom | Metal Max | NES-Gamemusic/Famicom/Data_East/Metal_Max.nsf
+Famicom | Metroid FDS | NES-Gamemusic/Famicom/Nintendo/Metroid_FDS.nsf
+Famicom | Minelvaton Saga | NES-Gamemusic/Famicom/Taito/Minelvaton_Saga.nsf
+Famicom | Mito Koumon | NES-Gamemusic/Famicom/Sunsoft/Mito_Koumon.nsf
+Famicom | Moon Crystal | NES-Gamemusic/Famicom/Hector/Moon_Crystal.nsf
+Famicom | Musashi no Bouken | NES-Gamemusic/Famicom/Sigma/Musashi_no_Bouken.nsf
+Famicom | Nadia Secret of Blue Water | NES-Gamemusic/Famicom/Toho/Nadia_Secret_of_Blue_Water.nsf
+Famicom | Nante tta tte Baseball | NES-Gamemusic/Famicom/Sunsoft/Nante_tta_tte_Baseball.nsf
+Famicom | Nazo no Kabe | NES-Gamemusic/Famicom/Konami/Nazo_no_Kabe.nsf
+Famicom | Nazo no Murasamejou | NES-Gamemusic/Famicom/Nintendo/Nazo_no_Murasamejou.nsf
+Famicom | Nekketsu Hockey | NES-Gamemusic/Famicom/Technos/Nekketsu_Hockey.nsf
+Famicom | Ninja Hattori Kun | NES-Gamemusic/Famicom/Hudson_Soft/Ninja_Hattori_Kun.nsf
+Famicom | Ninja kun Ashura no Sho | NES-Gamemusic/Famicom/UPL/Ninja_kun_Ashura_no_Sho.nsf
+Famicom | Nuts and Milk | NES-Gamemusic/Famicom/Hudson_Soft/Nuts_and_Milk.nsf
+Famicom | Obake no Q tarou | NES-Gamemusic/Famicom/Bandai/Obake_no_Q_tarou.nsf
+Famicom | Okhotsk ni Shoyu | NES-Gamemusic/Famicom/Login_Soft/Okhotsk_ni_Shoyu.nsf
+Famicom | Over Horizon | NES-Gamemusic/Famicom/Hot_B/Over_Horizon.nsf
+Famicom | Palutena no Kagami | NES-Gamemusic/Famicom/Nintendo/Palutena_no_Kagami.nsf
+Famicom | Parallel World | NES-Gamemusic/Famicom/Varie/Parallel_World.nsf
+Famicom | Pizza Pop | NES-Gamemusic/Famicom/Jaleco/Pizza_Pop.nsf
+Famicom | Pocket Zaurus Juohken no Nazo | NES-Gamemusic/Famicom/Bandai/Pocket_Zaurus_Juohken_no_Nazo.nsf
+Famicom | Pooyan | NES-Gamemusic/Famicom/Hudson_Soft/Pooyan.nsf
+Famicom | Quarth | NES-Gamemusic/Famicom/Konami/Quarth.nsf
+Famicom | Radia Senki | NES-Gamemusic/Famicom/Tecmo/Radia_Senki.nsf
+Famicom | Recca | NES-Gamemusic/Famicom/Naxat_Soft/Recca.nsf
+Famicom | Relics Ankoku Yousai | NES-Gamemusic/Famicom/Bothtec/Relics_Ankoku_Yousai.nsf
+Famicom | Risa no Yousei Densetsu | NES-Gamemusic/Famicom/Konami/Risa_no_Yousei_Densetsu.nsf
+Famicom | Robokko Wars | NES-Gamemusic/Famicom/IGS/Robokko_Wars.nsf
+Famicom | RockBoard | NES-Gamemusic/Famicom/Capcom/RockBoard.nsf
+Famicom | Rodland | NES-Gamemusic/Famicom/Jaleco/Rodland.nsf
+Famicom | Romancia | NES-Gamemusic/Famicom/Tokyo_Shoseki/Romancia.nsf
+Famicom | Sangokushi 2 | NES-Gamemusic/Famicom/Namco/Sangokushi_2.nsf
+Famicom | Sanma no Meitantei | NES-Gamemusic/Famicom/Namco/Sanma_no_Meitantei.nsf
+Famicom | SD Gundam Gachapon Senshi 4 | NES-Gamemusic/Famicom/Yutaka/SD_Gundam_Gachapon_Senshi_4.nsf
+Famicom | SD Keiji Blader | NES-Gamemusic/Famicom/Taito/SD_Keiji_Blader.nsf
+Famicom | Shancara | NES-Gamemusic/Famicom/IGS/Shancara.nsf
+Famicom | Shanghai | NES-Gamemusic/Famicom/Sunsoft/Shanghai.nsf
+Famicom | Shanghai 2 | NES-Gamemusic/Famicom/Sunsoft/Shanghai_2.nsf
+Famicom | Shikinjou | NES-Gamemusic/Famicom/Toei_Animation/Shikinjou.nsf
+Famicom | Shin Onigashima | NES-Gamemusic/Famicom/Nintendo/Shin_Onigashima.nsf
+Famicom | Shinjuku Chuokoen Satsujinjiken | NES-Gamemusic/Famicom/Data_East/Shinjuku_Chuokoen_Satsujinjiken.nsf
+Famicom | Shoukoushi  Ceddie | NES-Gamemusic/Famicom/Fuji_TV/Shoukoushi _Ceddie.nsf
+Famicom | Silva Saga | NES-Gamemusic/Famicom/Seta/Silva_Saga.nsf
+Famicom | Skykid | NES-Gamemusic/Famicom/Namco/Skykid.nsf
+Famicom | Somari | NES-Gamemusic/Famicom/Misc/Somari.nsf
+Famicom | Splatterhouse | NES-Gamemusic/Famicom/Namco/Splatterhouse.nsf
+Famicom | Star Luster | NES-Gamemusic/Famicom/Namco/Star_Luster.nsf
+Famicom | Sted | NES-Gamemusic/Famicom/KAC/Sted.nsf
+Famicom | Super Star Force | NES-Gamemusic/Famicom/Tecmo/Super_Star_Force.nsf
+Famicom | Super Xevious | NES-Gamemusic/Famicom/Namco/Super_Xevious.nsf
+Famicom | Sweet Home | NES-Gamemusic/Famicom/Capcom/Sweet_Home.nsf
+Famicom | Takeshi no Chousenjou | NES-Gamemusic/Famicom/Taito/Takeshi_no_Chousenjou.nsf
+Famicom | Tecmo World Cup Soccer | NES-Gamemusic/Famicom/Tecmo/Tecmo_World_Cup_Soccer.nsf
+Famicom | Tenchi o Kurau II | NES-Gamemusic/Famicom/Capcom/Tenchi_o_Kurau_II.nsf
+Famicom | Tetris 2 and Bombliss | NES-Gamemusic/Famicom/BPS/Tetris_2_and_Bombliss.nsf
+Famicom | Time Zone | NES-Gamemusic/Famicom/Sigma/Time_Zone.nsf
+Famicom | Toki no Sugiyuku mama ni | NES-Gamemusic/Famicom/Data_East/Toki_no_Sugiyuku_mama_ni.nsf
+Famicom | Top Striker | NES-Gamemusic/Famicom/Namco/Top_Striker.nsf
+Famicom | Toukaidou 53 tsugi | NES-Gamemusic/Famicom/Sunsoft/Toukaidou_53_tsugi.nsf
+Famicom | Toukon Club | NES-Gamemusic/Famicom/Jaleco/Toukon_Club.nsf
+Famicom | Tower of Babel | NES-Gamemusic/Famicom/Namco/Tower_of_Babel.nsf
+Famicom | Tower of Druaga | NES-Gamemusic/Famicom/Namco/Tower_of_Druaga.nsf
+Famicom | Transformers Convoy no Nazo | NES-Gamemusic/Famicom/Takara/Transformers_Convoy_no_Nazo.nsf
+Famicom | Twinbee 3 | NES-Gamemusic/Famicom/Konami/twinbee-3-poko-poko-dai-maou-jp.nsf
+Famicom | Uchuu Keibitai SDF | NES-Gamemusic/Famicom/Hal_Lab/Uchuu_Keibitai_SDF.nsf
+Famicom | Ushio to Tora | NES-Gamemusic/Famicom/Yutaka/Ushio_to_Tora.nsf
+Famicom | Valkyrie No Bouken | NES-Gamemusic/Famicom/Namco/Valkyrie_No_Bouken.nsf
+Famicom | Venus Senki | NES-Gamemusic/Famicom/Varie/Venus_Senki.nsf
+Famicom | Volgard II | NES-Gamemusic/Famicom/db_Soft/Volgard_II.nsf
+Famicom | Vs Excitebike FDS | NES-Gamemusic/Famicom/Nintendo/Vs_Excitebike_FDS.nsf
+Famicom | Wagyan Land | NES-Gamemusic/Famicom/Namco/Wagyan_Land.nsf
+Famicom | Wagyan Land 2 | NES-Gamemusic/Famicom/Namco/Wagyan_Land_2.nsf
+Famicom | Wagyan Land 3 | NES-Gamemusic/Famicom/Namco/Wagyan_Land_3.nsf
+Famicom | Wai Wai World | NES-Gamemusic/Famicom/Konami/Wai_Wai_World.nsf
+Famicom | Wai Wai World 2 | NES-Gamemusic/Famicom/Konami/Wai_Wai_World_2.nsf
+Famicom | Wing of Madoola | NES-Gamemusic/Famicom/Sunsoft/Wing_of_Madoola.nsf
+Famicom | Wizardry 3 | NES-Gamemusic/Famicom/Ascii/Wizardry_3.nsf
+Famicom | Yie Ar Kung Fu | NES-Gamemusic/Famicom/Konami/Yie_Ar_Kung_Fu.nsf
+Famicom | Yokohamako Renzokusatsujinjiken | NES-Gamemusic/Famicom/Data_East/Yokohamako_Renzokusatsujinjiken.nsf
+Famicom | Youkai Douchuuki | NES-Gamemusic/Famicom/Namco/Youkai_Douchuuki.nsf
+Famicom | Ys | NES-Gamemusic/Famicom/Victor/Ys.nsf
+Famicom | Ys II | NES-Gamemusic/Famicom/Victor/Ys_II.nsf
+Famicom | Ys III | NES-Gamemusic/Famicom/Victor/Ys_III.nsf
+Famicom | Yume Penguin Monogatari | NES-Gamemusic/Famicom/Konami/Yume_Penguin_Monogatari.nsf
+Famicom | Yuu Maze | NES-Gamemusic/Famicom/Taito/Yuu_Maze.nsf
+Famicom | Yuuyuuki | NES-Gamemusic/Famicom/Nintendo/Yuuyuuki.nsf
+Famicom | Zelda no Densetsu | NES-Gamemusic/Famicom/Nintendo/Zelda_no_Densetsu.nsf
+Famicom | Zeta Gundam Hot Scramble | NES-Gamemusic/Famicom/Bandai/Zeta_Gundam_Hot_Scramble.nsf
+Famicom | Zombie Hunter | NES-Gamemusic/Famicom/High_Score/Zombie_Hunter.nsf
+Nintendo | Alloy Run Mix | NES-Gamemusic/Nintendo/Scene_Demos/Alloy_Run_Mix.nsf
+Nintendo | Asterix | NES-Gamemusic/Nintendo/Infogrames/Asterix.nsf
+Nintendo | Bee 52 | NES-Gamemusic/Nintendo/Camerica/Bee_52.nsf
+Nintendo | Bignose Freaks Out | NES-Gamemusic/Nintendo/Camerica/Bignose_Freaks_Out.nsf
+Nintendo | Bignose the Caveman | NES-Gamemusic/Nintendo/Camerica/Bignose_the_Caveman.nsf
+Nintendo | Chase HQ | NES-Gamemusic/Nintendo/Taito/Chase_HQ.nsf
+Nintendo | Comic Bakery | NES-Gamemusic/Nintendo/Scene_Demos/Comic_Bakery.nsf
+Nintendo | Dance of the Sugarplum Faries | NES-Gamemusic/Nintendo/Scene_Demos/Dance_of_the_Sugarplum_Faries.nsf
+Nintendo | Dizzy the Adventurer | NES-Gamemusic/Nintendo/Camerica/Dizzy_the_Adventurer.nsf
+Nintendo | Fantastic Adventures of Dizzy | NES-Gamemusic/Nintendo/Camerica/Fantastic_Adventures_of_Dizzy.nsf
+Nintendo | Firehawk | NES-Gamemusic/Nintendo/Camerica/Firehawk.nsf
+Nintendo | Gianna | NES-Gamemusic/Nintendo/Scene_Demos/Gianna.nsf
+Nintendo | GoldRunner Music Demo | NES-Gamemusic/Nintendo/Scene_Demos/GoldRunner_Music_Demo.nsf
+Nintendo | Linus Spaceheads Cosmic Crusade | NES-Gamemusic/Nintendo/Camerica/Linus_Spaceheads_Cosmic_Crusade.nsf
+Nintendo | Micro Machines | NES-Gamemusic/Nintendo/Camerica/Micro_Machines.nsf
+Nintendo | Mig 29 Soviet Fighter | NES-Gamemusic/Nintendo/Camerica/Mig_29_Soviet_Fighter.nsf
+Nintendo | Quattro Baseball Pros | NES-Gamemusic/Nintendo/Camerica/Quattro_Baseball_Pros.nsf
+Nintendo | Quattro BMX Simulator | NES-Gamemusic/Nintendo/Camerica/Quattro_BMX_Simulator.nsf
+Nintendo | Quattro Boomerang Kid | NES-Gamemusic/Nintendo/Camerica/Quattro_Boomerang_Kid.nsf
+Nintendo | Quattro CJs Elephant Antics | NES-Gamemusic/Nintendo/Camerica/Quattro_CJs_Elephant_Antics.nsf
+Nintendo | Quattro F15 Renegade | NES-Gamemusic/Nintendo/Camerica/Quattro_F15_Renegade.nsf
+Nintendo | Quattro Go Dizzy Go | NES-Gamemusic/Nintendo/Camerica/Quattro_Go_Dizzy_Go.nsf
+Nintendo | Quattro Linus Spacehead | NES-Gamemusic/Nintendo/Camerica/Quattro_Linus_Spacehead.nsf
+Nintendo | Quattro Pro Tennis | NES-Gamemusic/Nintendo/Camerica/Quattro_Pro_Tennis.nsf
+Nintendo | Quattro Soccer Simulator | NES-Gamemusic/Nintendo/Camerica/Quattro_Soccer_Simulator.nsf
+Nintendo | Quattro Stunt Buggies | NES-Gamemusic/Nintendo/Camerica/Quattro_Stunt_Buggies.nsf
+Nintendo | Quattro Super Robin Hood | NES-Gamemusic/Nintendo/Camerica/Quattro_Super_Robin_Hood.nsf
+Nintendo | Quattro Treasure Island Dizzy | NES-Gamemusic/Nintendo/Camerica/Quattro_Treasure_Island_Dizzy.nsf
+Nintendo | Shinobi | NES-Gamemusic/Nintendo/Tengen/Shinobi.nsf
+Nintendo | Smurfs | NES-Gamemusic/Nintendo/Infogrames/Smurfs.nsf
+Nintendo | Snow | NES-Gamemusic/Nintendo/Scene_Demos/Snow.nsf
+Nintendo | Solar Wars | NES-Gamemusic/Nintendo/Scene_Demos/Solar_Wars.nsf
+Nintendo | Stunt Kids | NES-Gamemusic/Nintendo/Camerica/Stunt_Kids.nsf
+Nintendo | Ultimate Stuntman | NES-Gamemusic/Nintendo/Camerica/Ultimate_Stuntman.nsf
+Nintendo | Vs Balloon Fight | NES-Gamemusic/Nintendo/Nintendo/Vs_Balloon_Fight.nsf
+Nintendo | Vs Clu Clu Land | NES-Gamemusic/Nintendo/Nintendo/Vs_Clu_Clu_Land.nsf
+Nintendo | Vs Excitebike | NES-Gamemusic/Nintendo/Nintendo/Vs_Excitebike.nsf
+Nintendo | Vs Wrecking Crew | NES-Gamemusic/Nintendo/Nintendo/Vs_Wrecking_Crew.nsf

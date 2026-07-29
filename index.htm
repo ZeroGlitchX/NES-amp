@@ -6,7 +6,7 @@
 <title>NESamp — Chiptune Player</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════
    RESET & CUSTOM PROPERTIES
@@ -761,55 +761,1160 @@ html, body {
     /* Volume mute button */
     .volume-section { order: 1; }
 }
+
+/* ═══════════════════════════════════════════════
+   MODERN LISTENING ROOM
+   A tactile, mobile-first layer over the player.
+   ═══════════════════════════════════════════════ */
+:root {
+    --bg-void: #08080b;
+    --bg-deep: #0c0c10;
+    --bg-dark: #111116;
+    --bg-surface: #17171d;
+    --bg-card: #202027;
+    --bg-hover: #25252d;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-lit: rgba(255, 255, 255, 0.16);
+    --text-primary: #f7f7f4;
+    --text-secondary: #a8a8b2;
+    --text-dim: #686873;
+    --accent: #d8ff64;
+    --accent-strong: #bff436;
+    --accent-glow: rgba(216, 255, 100, 0.22);
+    --art-primary: #8b5cf6;
+    --art-secondary: #ec4899;
+    --font-ui: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'Space Mono', 'SFMono-Regular', Consolas, monospace;
+    --radius: 12px;
+    --radius-lg: 24px;
+}
+
+html,
+body {
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+}
+
+body {
+    background-image:
+        radial-gradient(circle at 14% 8%, color-mix(in srgb, var(--art-primary) 16%, transparent), transparent 32rem),
+        radial-gradient(circle at 82% 12%, color-mix(in srgb, var(--art-secondary) 10%, transparent), transparent 28rem);
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button:focus-visible,
+.progress-track:focus-visible,
+.volume-track:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 99px; }
+
+.app {
+    grid-template-rows: 76px minmax(0, 1fr) 108px;
+    grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+    isolation: isolate;
+    background: linear-gradient(145deg, rgba(255,255,255,0.018), transparent 42%);
+}
+
+.app::before {
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(circle at 17% 32%, color-mix(in srgb, var(--art-primary) 16%, transparent), transparent 27%),
+        radial-gradient(circle at 20% 57%, color-mix(in srgb, var(--art-secondary) 9%, transparent), transparent 25%);
+    opacity: 0.85;
+    transition: background 500ms ease;
+}
+
+.app::after { display: none; }
+
+.header {
+    padding: 0 30px;
+    gap: 20px;
+    background: rgba(8, 8, 11, 0.68);
+    border-bottom-color: var(--border);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-mark,
+.boot-emblem {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 0 0 auto;
+    color: #0b0b0d;
+    background: var(--accent);
+    border-radius: 13px;
+    box-shadow: 0 8px 26px var(--accent-glow);
+}
+
+.brand-mark i,
+.boot-emblem i {
+    width: 3px;
+    height: 10px;
+    display: block;
+    background: currentColor;
+    border-radius: 4px;
+}
+
+.brand-mark i:nth-child(2),
+.boot-emblem i:nth-child(2) { height: 20px; }
+.brand-mark i:nth-child(3),
+.boot-emblem i:nth-child(3) { height: 15px; }
+.brand-mark i:nth-child(4),
+.boot-emblem i:nth-child(4) { height: 25px; }
+
+.logo,
+.logo span {
+    font-family: var(--font-ui);
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.7px;
+    text-shadow: none;
+}
+
+.logo span { color: var(--accent); }
+
+.brand-tag {
+    margin-top: 5px;
+    color: var(--text-dim);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+}
+
+.load-btn {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 17px;
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.06);
+    border-color: var(--border);
+    border-radius: 99px;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.load-btn svg { width: 16px; height: 16px; fill: currentColor; }
+.load-btn:hover {
+    color: #0b0b0d;
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 8px 28px var(--accent-glow);
+    transform: translateY(-1px);
+}
+
+.sidebar {
+    position: relative;
+    padding: 22px 34px 28px;
+    gap: 16px;
+    overflow-x: hidden;
+    background: rgba(255,255,255,0.018);
+    border-right-color: var(--border);
+}
+
+.now-playing-label {
+    width: min(100%, 310px);
+    margin: 0 auto -2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.now-playing-label span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 14px var(--accent);
+}
+
+.album-art-wrap {
+    width: min(100%, 310px);
+    max-width: 310px;
+    border-radius: 28px;
+    box-shadow:
+        0 28px 65px rgba(0,0,0,0.42),
+        0 0 0 1px rgba(255,255,255,0.10),
+        0 0 70px color-mix(in srgb, var(--art-primary) 15%, transparent);
+    transition: transform 350ms cubic-bezier(.2,.8,.2,1), box-shadow 500ms ease;
+}
+
+.album-art-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(145deg, rgba(255,255,255,0.15), transparent 28%, transparent 72%, rgba(0,0,0,0.18));
+    mix-blend-mode: soft-light;
+}
+
+.album-art-wrap.playing {
+    transform: translateY(-2px) scale(1.008);
+    box-shadow:
+        0 34px 76px rgba(0,0,0,0.48),
+        0 0 0 1px color-mix(in srgb, var(--art-primary) 55%, white),
+        0 0 90px color-mix(in srgb, var(--art-primary) 24%, transparent);
+}
+
+.album-art-wrap.playing::after {
+    inset: auto 18px 15px;
+    height: 3px;
+    z-index: 2;
+    border: 0;
+    border-radius: 99px;
+    background: var(--accent);
+    box-shadow: 0 0 18px var(--accent);
+    animation: listeningPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes listeningPulse {
+    0%, 100% { opacity: 0.45; transform: scaleX(0.45); }
+    50% { opacity: 1; transform: scaleX(1); }
+}
+
+#artCanvas { image-rendering: pixelated; }
+
+.meta {
+    width: min(100%, 310px);
+    margin: 2px auto 0;
+    text-align: left;
+}
+
+.now-track {
+    margin-bottom: 5px;
+    color: var(--text-primary);
+    font-size: clamp(20px, 2.1vw, 29px);
+    line-height: 1.18;
+    font-weight: 800;
+    letter-spacing: -0.9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.game-title {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meta-line {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.meta-line > span { color: var(--text-dim); font-size: 9px; }
+.artist,
+.track-counter {
+    margin: 0;
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.artist { max-width: 58%; }
+.track-counter { color: var(--accent); }
+.copyright { display: none; }
+
+.audio-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.audio-specs span {
+    padding: 5px 7px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,.045);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .7px;
+    text-transform: uppercase;
+}
+
+.viz-wrap {
+    width: min(100%, 310px);
+    max-width: 310px;
+    margin-top: auto;
+    padding: 12px 12px 10px;
+    background: rgba(0,0,0,0.24);
+    border-color: var(--border);
+    border-radius: 17px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
+}
+
+.viz-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 2px 8px;
+    color: var(--text-dim);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.viz-status {
+    padding: 3px 6px;
+    color: var(--accent);
+    background: rgba(216,255,100,0.08);
+    border-radius: 5px;
+}
+
+#visualizer { height: 58px; border-radius: 9px; }
+
+.hero-player-controls { display: none; }
+
+.main-content {
+    padding-top: 8px;
+    background: transparent;
+}
+
+.library-section {
+    padding: 22px 38px 0;
+}
+
+.section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.section-heading h2 {
+    color: var(--text-primary);
+    font-size: clamp(22px, 2.4vw, 32px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -1.1px;
+}
+
+.section-label {
+    margin-bottom: 7px;
+    color: var(--accent);
+    font-family: var(--font-ui);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+}
+
+.section-note {
+    padding-bottom: 3px;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.library-strip {
+    gap: 16px;
+    padding: 2px 2px 20px;
+    scrollbar-width: none;
+}
+.library-strip::-webkit-scrollbar { display: none; }
+
+.game-card {
+    width: 150px;
+    padding: 0;
+    text-align: left;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: 20px;
+}
+
+.game-card:hover {
+    background: transparent;
+    border-color: transparent;
+    transform: translateY(-4px);
+}
+
+.game-card-art {
+    position: relative;
+    margin-bottom: 11px;
+    border-radius: 19px;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.26), 0 0 0 1px rgba(255,255,255,0.06);
+    transition: box-shadow .25s ease, transform .25s ease;
+}
+
+.game-card-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255,255,255,.12), transparent 42%);
+}
+
+.game-card:hover .game-card-art { box-shadow: 0 19px 38px rgba(0,0,0,0.36), 0 0 0 1px rgba(255,255,255,.13); }
+.game-card.active { background: transparent; border: 0; box-shadow: none; }
+.game-card.active .game-card-art {
+    box-shadow: 0 16px 35px rgba(0,0,0,0.34), 0 0 0 3px var(--accent);
+}
+
+.game-card.active .game-card-art::before {
+    content: '';
+    position: absolute;
+    right: 9px;
+    bottom: 9px;
+    z-index: 2;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7v10l8-5z' fill='%230b0b0d'/%3E%3C/svg%3E") center/17px no-repeat;
+    box-shadow: 0 5px 16px rgba(0,0,0,.3);
+}
+
+.game-card-title,
+.game-card.active .game-card-title {
+    padding: 0 4px;
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+.game-card.active .game-card-title { color: var(--text-primary); }
+
+.tracklist-section {
+    padding: 18px 38px 0;
+}
+
+.tracks-heading { margin-bottom: 13px; }
+.tracks-heading h2 { font-size: 23px; }
+
+.tracklist-header {
+    grid-template-columns: 44px minmax(0, 1fr) 72px;
+    padding: 0 16px 10px;
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    border-bottom-color: var(--border);
+}
+
+.tracks-scroll { padding: 5px 0 28px; }
+
+.track-row {
+    width: 100%;
+    min-height: 54px;
+    grid-template-columns: 44px minmax(0, 1fr) 72px;
+    padding: 8px 16px;
+    color: inherit;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-radius: 13px;
+}
+.track-row:hover { background: rgba(255,255,255,0.045); }
+.track-row.active { background: rgba(216,255,100,0.075); }
+.track-row.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15px;
+    bottom: 15px;
+    width: 3px;
+    border-radius: 99px;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.track-num {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+}
+.track-row.active .track-num { color: var(--accent); }
+.track-name { color: var(--text-secondary); font-size: 13px; font-weight: 600; }
+.track-row.active .track-name { color: var(--text-primary); font-weight: 700; }
+.track-time { color: var(--text-dim); font-family: var(--font-mono); font-size: 9px; }
+.eq-bar { width: 2px; background: var(--accent); border-radius: 3px; }
+
+.player-bar {
+    display: grid;
+    grid-template-columns: minmax(190px, 1fr) auto minmax(190px, 1fr);
+    grid-template-rows: minmax(0, 1fr) 22px;
+    grid-template-areas:
+        "context controls volume"
+        "progress progress progress";
+    padding: 10px 30px 12px;
+    gap: 0 22px;
+    background: rgba(17,17,22,0.86);
+    border-top-color: var(--border);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    box-shadow: 0 -18px 50px rgba(0,0,0,.18);
+}
+
+.player-context {
+    grid-area: context;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mini-art {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+    padding: 8px;
+    overflow: hidden;
+    color: var(--art-primary);
+    background: linear-gradient(145deg, var(--art-primary), var(--art-secondary));
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.28);
+}
+
+.mini-art i {
+    display: block;
+    opacity: .82;
+    background: rgba(8,8,11,.72);
+    border-radius: 2px;
+}
+.mini-art i:nth-child(2), .mini-art i:nth-child(3) { opacity: .35; }
+
+.mini-meta { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.mini-meta strong,
+.mini-meta span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-meta strong { color: var(--text-primary); font-size: 12px; font-weight: 750; }
+.mini-meta span { color: var(--text-dim); font-size: 10px; font-weight: 600; }
+
+.controls { grid-area: controls; align-self: center; gap: 4px; }
+.ctrl-btn {
+    width: 38px;
+    height: 38px;
+    color: var(--text-secondary);
+    border-radius: 50%;
+}
+.ctrl-btn svg { width: 17px; height: 17px; }
+.ctrl-btn:hover { color: var(--text-primary); background: rgba(255,255,255,.07); }
+.ctrl-btn.active { color: var(--accent); }
+.ctrl-btn.active::after { background: var(--accent); bottom: 0; }
+.play-btn {
+    width: 52px;
+    height: 52px;
+    margin: 0 5px;
+    color: #0b0b0d !important;
+    background: var(--accent);
+    box-shadow: 0 8px 25px var(--accent-glow);
+}
+.play-btn:hover {
+    color: #0b0b0d;
+    background: var(--accent-strong);
+    box-shadow: 0 10px 34px var(--accent-glow);
+}
+
+.progress-section {
+    grid-area: progress;
+    width: 100%;
+    align-self: end;
+    gap: 10px;
+}
+.time-label { width: 35px; color: var(--text-dim); font-family: var(--font-mono); font-size: 8px; }
+.progress-track { height: 4px; background: rgba(255,255,255,.10); border-radius: 99px; }
+.progress-track:hover { height: 6px; margin: -1px 0; }
+.progress-fill { background: var(--accent); border-radius: 99px; box-shadow: none; }
+.progress-knob { width: 11px; height: 11px; right: -5px; background: var(--text-primary); }
+
+.volume-section {
+    grid-area: volume;
+    width: min(150px, 100%);
+    justify-self: end;
+    align-self: center;
+}
+.volume-track { height: 4px; background: rgba(255,255,255,.10); }
+.volume-fill { background: var(--text-secondary); }
+.volume-track:hover .volume-fill { background: var(--accent); }
+
+.drop-overlay {
+    background: rgba(8,8,11,.82);
+    backdrop-filter: blur(20px);
+}
+.drop-box {
+    border-width: 1px;
+    border-color: var(--accent);
+    border-radius: 28px;
+    background: rgba(255,255,255,.04);
+}
+.drop-icon, .drop-text { color: var(--accent); }
+
+.boot-screen {
+    background:
+        radial-gradient(circle at 50% 43%, rgba(216,255,100,.08), transparent 25rem),
+        #08080b;
+}
+.boot-emblem { width: 54px; height: 54px; margin-bottom: 23px; border-radius: 17px; animation: logoIn .4s ease-out .35s both; }
+.boot-logo,
+.boot-logo span {
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -1.3px;
+    text-shadow: none;
+}
+.boot-logo span { color: var(--accent); }
+.boot-sub { margin-top: 10px; color: var(--text-dim); font-family: var(--font-ui); font-size: 9px; font-weight: 800; letter-spacing: 2px; }
+
+/* Real cover-art treatment: preserve the box, soften its colors into the shell. */
+.ambient-cover {
+    position: fixed;
+    inset: -18%;
+    z-index: -2;
+    pointer-events: none;
+    background-position: center;
+    background-size: cover;
+    filter: blur(110px) saturate(1.25) brightness(.52);
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity .55s ease, background-image .55s ease;
+}
+.ambient-cover.visible { opacity: .19; }
+
+.cover-backdrop {
+    position: absolute;
+    inset: -9%;
+    z-index: 0;
+    background-position: center;
+    background-size: cover;
+    filter: blur(20px) saturate(1.16) brightness(.60);
+    opacity: 0;
+    transform: scale(1.1);
+    transition: opacity .35s ease, background-image .35s ease;
+}
+.album-art-wrap.has-cover .cover-backdrop { opacity: 1; }
+.cover-art {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    width: auto;
+    height: 90%;
+    max-width: 84%;
+    object-fit: contain;
+    border-radius: 7px;
+    filter: saturate(.94) contrast(1.035) brightness(.95);
+    box-shadow: 0 18px 35px rgba(0,0,0,.48), 0 0 0 1px rgba(255,255,255,.12);
+    transform: translate(-50%, -50%);
+}
+.cover-art[hidden],
+#artCanvas[hidden] { display: none; }
+.album-art-wrap.has-cover::before {
+    z-index: 3;
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.18), transparent 25%, transparent 72%, rgba(0,0,0,.24)),
+        linear-gradient(to top, rgba(8,8,11,.12), transparent 35%);
+}
+.album-art-wrap.playing::after { z-index: 4; }
+#artCanvas { position: relative; z-index: 1; }
+
+.game-card-art.has-cover {
+    background-position: center;
+    background-size: cover;
+}
+.game-card-cover {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 8px 19px;
+    object-fit: contain;
+    border-radius: 15px;
+    filter: saturate(.94) contrast(1.025) brightness(.96) drop-shadow(0 8px 13px rgba(0,0,0,.38));
+}
+.game-card-art.has-cover::after {
+    z-index: 2;
+    background: linear-gradient(145deg, rgba(255,255,255,.16), transparent 34%, rgba(0,0,0,.16));
+}
+
+.mini-art { position: relative; }
+.mini-art img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(.92) contrast(1.05) brightness(.92);
+}
+.mini-art img[hidden] { display: none; }
+.mini-art.has-cover { display: block; padding: 0; background: var(--bg-card); }
+.mini-art.has-cover i { display: none; }
+
+@media (max-width: 1100px) and (min-width: 761px) {
+    .app {
+        grid-template-columns: 310px minmax(0, 1fr);
+        grid-template-rows: 76px minmax(0, 1fr) 108px;
+        grid-template-areas:
+            "header header"
+            "sidebar main"
+            "player player";
+    }
+    .sidebar {
+        flex-direction: column;
+        align-items: stretch;
+        padding-left: 26px;
+        padding-right: 26px;
+        border-right: 1px solid var(--border);
+        border-bottom: 0;
+    }
+    .album-art-wrap, .now-playing-label, .meta, .viz-wrap { width: 100%; max-width: 258px; }
+    .viz-wrap { display: block; }
+    .volume-track { display: block; }
+    .volume-section { width: min(140px, 100%); }
+    .library-section, .tracklist-section { padding-left: 28px; padding-right: 28px; }
+    .game-card { width: 132px; }
+    .player-bar { grid-template-columns: minmax(150px,1fr) auto minmax(120px,1fr); padding-left: 22px; padding-right: 22px; }
+    .stop-control { display: none; }
+}
+
+@media (max-width: 760px) {
+    html,
+    body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .app {
+        display: block;
+        width: 100%;
+        height: auto;
+        min-height: 100dvh;
+        padding-bottom: calc(94px + var(--safe-bottom));
+    }
+
+    .ambient-cover.visible { opacity: .27; }
+
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        height: 72px;
+        padding: var(--safe-top) calc(18px + var(--safe-right)) 0 calc(18px + var(--safe-left));
+    }
+
+    .brand-mark { width: 38px; height: 38px; border-radius: 12px; }
+    .brand-tag { display: none; }
+    .logo, .logo span { font-size: 18px; }
+    .load-btn { width: 42px; min-height: 42px; justify-content: center; padding: 0; }
+    .load-btn span { display: none; }
+
+    .sidebar {
+        width: 100%;
+        padding: 25px calc(22px + var(--safe-right)) 30px calc(22px + var(--safe-left));
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 17px;
+        overflow: visible;
+        background: transparent;
+        border: 0;
+    }
+
+    .now-playing-label,
+    .album-art-wrap,
+    .meta,
+    .viz-wrap {
+        width: min(100%, 390px);
+        max-width: 390px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .album-art-wrap { width: min(72vw, 350px); }
+    .now-track { font-size: clamp(25px, 7vw, 34px); }
+    .game-title { font-size: 14px; }
+    .artist, .track-counter { font-size: 9.5px; }
+    .audio-specs { margin-top: 13px; }
+
+    .viz-wrap {
+        position: relative;
+        display: block;
+        min-height: 176px;
+        margin-top: 5px;
+        padding: 12px;
+        overflow: hidden;
+        background:
+            linear-gradient(180deg, rgba(255,255,255,.025), rgba(0,0,0,.26)),
+            color-mix(in srgb, var(--art-primary) 8%, #08080b);
+        border-color: color-mix(in srgb, var(--art-primary) 28%, var(--border));
+        box-shadow: 0 18px 42px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .viz-wrap::after {
+        content: '';
+        position: absolute;
+        inset: 28px 0 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(90deg, color-mix(in srgb, var(--art-primary) 10%, transparent), transparent 28%, transparent 72%, color-mix(in srgb, var(--art-secondary) 10%, transparent));
+    }
+    .viz-head { position: relative; z-index: 3; }
+    #visualizer {
+        position: absolute;
+        inset: 35px 10px 8px;
+        z-index: 0;
+        width: calc(100% - 20px);
+        height: 132px;
+        opacity: .54;
+        pointer-events: none;
+        -webkit-mask-image: linear-gradient(to bottom, transparent, #000 28%, #000 80%, transparent);
+        mask-image: linear-gradient(to bottom, transparent, #000 28%, #000 80%, transparent);
+    }
+
+    .hero-player-controls {
+        position: absolute;
+        inset: 37px 12px 12px;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .hero-transport {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(8px, 4vw, 18px);
+        padding-top: 10px;
+    }
+    .hero-control {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        color: var(--text-primary);
+        background: rgba(8,8,11,.68);
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 50%;
+        box-shadow: 0 8px 20px rgba(0,0,0,.22);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        cursor: pointer;
+        transition: transform .18s ease, color .18s ease, background .18s ease;
+    }
+    .hero-control:hover { transform: translateY(-2px); }
+    .hero-control:active { transform: scale(.94); }
+    .hero-control svg { width: 18px; height: 18px; fill: currentColor; }
+    .hero-control.album-control svg { width: 20px; height: 20px; }
+    .hero-control:disabled { opacity: .38; pointer-events: none; }
+    .hero-control.hero-secondary { width: 36px; height: 36px; color: var(--text-secondary); }
+    .hero-control.hero-secondary svg { width: 15px; height: 15px; }
+    .hero-control.active { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+    .hero-play {
+        width: 58px;
+        height: 58px;
+        color: #09090b;
+        background: var(--accent);
+        border-color: var(--accent);
+        box-shadow: 0 12px 30px var(--accent-glow);
+    }
+    .hero-play svg { width: 24px; height: 24px; }
+    .hero-progress {
+        display: grid;
+        grid-template-columns: 34px minmax(0,1fr) 34px;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-dim);
+        font-family: var(--font-mono);
+        font-size: 8px;
+        font-variant-numeric: tabular-nums;
+    }
+    .hero-progress span:last-child { text-align: right; }
+    .hero-progress-track {
+        height: 20px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+        touch-action: none;
+    }
+    .hero-progress-track::before {
+        content: '';
+        position: absolute;
+        inset: 8px 0;
+        background: rgba(255,255,255,.15);
+        border-radius: 99px;
+    }
+    .hero-progress-fill {
+        position: relative;
+        z-index: 1;
+        height: 4px;
+        width: 0;
+        background: var(--accent);
+        border-radius: 99px;
+        box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .main-content { display: block; overflow: visible; padding: 8px 0 10px; }
+    .library-section,
+    .tracklist-section {
+        padding-left: calc(18px + var(--safe-left));
+        padding-right: calc(18px + var(--safe-right));
+    }
+    .library-section { display: none; }
+    .section-heading { margin-bottom: 15px; }
+    .section-heading h2 { font-size: 26px; }
+    .section-note { display: none; }
+
+    .library-strip {
+        width: calc(100% + 36px + var(--safe-left) + var(--safe-right));
+        margin-left: calc(-18px - var(--safe-left));
+        padding: 2px calc(18px + var(--safe-right)) 25px calc(18px + var(--safe-left));
+        gap: 14px;
+    }
+    .game-card { width: min(39vw, 168px); }
+
+    .tracklist-section { display: block; overflow: visible; padding-top: 19px; }
+    .tracks-scroll { overflow: visible; padding-bottom: 22px; }
+    .tracklist-header { grid-template-columns: 38px minmax(0,1fr) 58px; padding-left: 12px; padding-right: 12px; }
+    .track-row {
+        min-height: 62px;
+        grid-template-columns: 38px minmax(0,1fr) 58px;
+        padding: 9px 12px;
+        border-radius: 14px;
+    }
+    .track-name { font-size: 13px; }
+
+    .player-bar {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: calc(8px + var(--safe-bottom));
+        z-index: 100;
+        width: auto;
+        height: 80px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: 4px minmax(0, 1fr);
+        grid-template-areas:
+            "progress progress"
+            "context controls";
+        padding: 0 11px 0 12px;
+        gap: 0 7px;
+        overflow: hidden;
+        background: rgba(29,29,35,.90);
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 21px;
+        box-shadow: 0 18px 55px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .player-context { gap: 10px; }
+    .mini-art { width: 48px; height: 48px; border-radius: 11px; }
+    .mini-meta strong { font-size: 11px; }
+    .mini-meta span { font-size: 9px; }
+
+    .controls { gap: 0; }
+    .controls .secondary-control { display: none; }
+    .ctrl-btn { width: 39px; height: 44px; }
+    .ctrl-btn svg { width: 18px; height: 18px; }
+    .play-btn { width: 46px; height: 46px; margin: 0; }
+    .play-btn svg { width: 21px; height: 21px; }
+
+    .progress-section {
+        align-self: start;
+        height: 4px;
+        margin: 0 -11px 0 -12px;
+        width: calc(100% + 23px);
+    }
+    .progress-section .time-label { display: none; }
+    .progress-track,
+    .progress-track:hover {
+        height: 4px;
+        margin: 0;
+        padding: 0;
+        background: rgba(255,255,255,.08);
+    }
+    .progress-knob { display: none; }
+    .volume-section { display: none; }
+
+    .drop-box { margin: 20px; padding: 42px 34px; }
+}
+
+@media (max-width: 390px) {
+    .sidebar { padding-left: 17px; padding-right: 17px; }
+    .album-art-wrap { width: min(72vw, 300px); }
+    .hero-transport { gap: 7px; }
+    .hero-control.hero-secondary { width: 33px; height: 33px; }
+    .library-section, .tracklist-section { padding-left: 14px; padding-right: 14px; }
+    .library-strip { width: calc(100% + 28px); margin-left: -14px; padding-left: 14px; padding-right: 14px; }
+    .game-card { width: 142px; }
+    .mini-art { width: 43px; height: 43px; }
+    .mini-meta strong { max-width: 92px; }
+    .mini-meta span { max-width: 92px; }
+    .ctrl-btn { width: 35px; }
+    .play-btn { width: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
 </style>
 </head>
 <body>
 
-<!-- Boot Sequence -->
-<div class="boot-screen" id="bootScreen">
-    <div class="boot-flash"></div>
-    <div class="boot-logo">NES<span>amp</span></div>
-    <div class="boot-sub">CHIPTUNE PLAYER</div>
-</div>
-
 <div class="app">
+    <div class="ambient-cover" id="ambientCover" aria-hidden="true"></div>
 
     <!-- Header -->
     <header class="header">
-        <div class="logo">NES<span>amp</span></div>
+        <div class="brand">
+            <div class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <div>
+                <div class="logo">NES<span>amp</span></div>
+                <div class="brand-tag">Original 8-bit audio</div>
+            </div>
+        </div>
         <div class="header-spacer"></div>
-        <button class="load-btn" id="loadBtn">LOAD NSF</button>
+        <button class="load-btn" id="loadBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v14h-2zM5 11h14v2H5z"/></svg>
+            <span>Import NSF</span>
+        </button>
         <input type="file" id="fileInput" accept=".nsf,.nsfe">
     </header>
 
     <!-- Sidebar: Now Playing -->
     <aside class="sidebar">
+        <div class="now-playing-label"><span></span> Now playing</div>
         <div class="album-art-wrap" id="albumWrap">
+            <div class="cover-backdrop" id="coverBackdrop" aria-hidden="true"></div>
+            <img class="cover-art" id="coverArt" alt="" hidden>
             <canvas id="artCanvas" width="128" height="128"></canvas>
         </div>
         <div class="meta">
+            <h1 class="now-track" id="nowTrack">—</h1>
             <h2 class="game-title" id="gameTitle">—</h2>
-            <p class="artist" id="artistName">—</p>
+            <div class="meta-line">
+                <p class="artist" id="artistName">—</p>
+                <span aria-hidden="true">•</span>
+                <p class="track-counter" id="trackCounter">— / —</p>
+            </div>
+            <div class="audio-specs" aria-label="Playback format">
+                <span>NSF audio</span>
+                <span>5-ch APU</span>
+                <span>Local</span>
+            </div>
             <p class="copyright" id="copyright"></p>
-            <p class="track-counter" id="trackCounter">— / —</p>
         </div>
         <div class="viz-wrap">
+            <div class="viz-head"><span>Live channels</span><span class="viz-status">APU</span></div>
             <canvas id="visualizer" width="280" height="72"></canvas>
+            <div class="hero-player-controls">
+                <div class="hero-transport">
+                    <button class="hero-control hero-secondary" id="heroShuffleBtn" type="button" aria-label="Shuffle">
+                        <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+                    </button>
+                    <button class="hero-control album-control" id="heroPrevAlbumBtn" type="button" aria-label="Previous game album" title="Previous game album">
+                        <svg viewBox="0 0 24 24"><path d="M7 4h12v16H7V4zm2 2v12h8V6H9zM5 7H3v10h2V7zm8 2-4 3 4 3V9z"/></svg>
+                    </button>
+                    <button class="hero-control hero-play" id="heroPlayBtn" type="button" aria-label="Play or pause">
+                        <svg viewBox="0 0 24 24" id="heroPlayIcon"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <button class="hero-control album-control" id="heroNextAlbumBtn" type="button" aria-label="Next game album" title="Next game album">
+                        <svg viewBox="0 0 24 24"><path d="M5 4h12v16H5V4zm2 2v12h8V6H7zm4 3 4 3-4 3V9zm8-2h2v10h-2V7z"/></svg>
+                    </button>
+                    <button class="hero-control hero-secondary" id="heroRepeatBtn" type="button" aria-label="Repeat">
+                        <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+                    </button>
+                </div>
+                <div class="hero-progress">
+                    <span id="heroElapsed">0:00</span>
+                    <div class="hero-progress-track" id="heroProgressTrack">
+                        <div class="hero-progress-fill" id="heroProgressFill"></div>
+                    </div>
+                    <span id="heroDuration">0:00</span>
+                </div>
+            </div>
         </div>
     </aside>
 
     <!-- Main: Library + Tracks -->
     <section class="main-content">
         <div class="library-section">
-            <div class="section-label">LIBRARY</div>
+            <div class="section-heading">
+                <div>
+                    <div class="section-label">Discover</div>
+                    <h2>Game library</h2>
+                </div>
+                <span class="section-note">A fresh mix every visit</span>
+            </div>
             <div class="library-strip" id="libraryStrip"></div>
         </div>
         <div class="tracklist-section">
-            <div class="section-label">TRACKLIST</div>
+            <div class="section-heading tracks-heading">
+                <div>
+                    <div class="section-label">Selected soundtrack</div>
+                    <h2>Up next</h2>
+                </div>
+            </div>
             <div class="tracklist-header">
                 <span>#</span>
                 <span>TITLE</span>
-                <span style="text-align:right">TIME</span>
+                <span style="text-align:right">DURATION</span>
             </div>
             <div class="tracks-scroll" id="trackList"></div>
         </div>
@@ -817,23 +1922,33 @@ html, body {
 
     <!-- Player Bar -->
     <footer class="player-bar">
+        <div class="player-context">
+            <div class="mini-art" id="miniArt" aria-hidden="true">
+                <img id="miniCover" alt="" hidden>
+                <i></i><i></i><i></i><i></i>
+            </div>
+            <div class="mini-meta">
+                <strong id="miniTrack">—</strong>
+                <span id="miniGame">—</span>
+            </div>
+        </div>
         <div class="controls">
-            <button class="ctrl-btn" id="shuffleBtn" title="Shuffle">
+            <button class="ctrl-btn secondary-control" id="shuffleBtn" title="Shuffle" aria-label="Shuffle">
                 <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
             </button>
-            <button class="ctrl-btn" id="prevBtn" title="Previous Track">
+            <button class="ctrl-btn" id="prevBtn" title="Previous Track" aria-label="Previous track">
                 <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
             </button>
-            <button class="ctrl-btn play-btn" id="playBtn" title="Play">
+            <button class="ctrl-btn play-btn" id="playBtn" title="Play" aria-label="Play or pause">
                 <svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
             </button>
-            <button class="ctrl-btn" id="stopBtn" title="Stop">
+            <button class="ctrl-btn secondary-control stop-control" id="stopBtn" title="Stop" aria-label="Stop">
                 <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
             </button>
-            <button class="ctrl-btn" id="nextBtn" title="Next Track">
+            <button class="ctrl-btn" id="nextBtn" title="Next Track" aria-label="Next track">
                 <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
             </button>
-            <button class="ctrl-btn" id="repeatBtn" title="Repeat">
+            <button class="ctrl-btn secondary-control" id="repeatBtn" title="Repeat" aria-label="Repeat">
                 <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
             </button>
         </div>
@@ -870,12 +1985,13 @@ html, body {
 </div>
 
 <!-- NSF Engine -->
-<script src="src/nsf-parser.js"></script>
-<script src="src/cpu6502.js"></script>
-<script src="src/apu.js"></script>
-<script src="src/memory.js"></script>
-<script src="src/nsf-engine.js"></script>
-<script src="src/games-library.js"></script>
+<script src="src/nsf-parser.js?v=20260729-1"></script>
+<script src="src/cpu6502.js?v=20260729-1"></script>
+<script src="src/apu.js?v=20260729-1"></script>
+<script src="src/memory.js?v=20260729-1"></script>
+<script src="src/nsf-engine.js?v=20260729-1"></script>
+<script src="src/games-library.js?v=20260729-1"></script>
+<script src="src/cover-art.js?v=20260729-1"></script>
 
 <script>
 /* ═══════════════════════════════════════════════
@@ -1066,6 +2182,7 @@ async function loadNSFFile(arrayBuffer) {
             title: meta.title || 'Unknown',
             artist: meta.artist || 'Unknown',
             copyright: meta.copyright || '',
+            cover: COVER_ART[meta.title] || null,
             colors: colorsFromTitle(meta.title),
             seed: hashString(meta.title),
             tracks: Array.from({length: meta.totalSongs}, (_, i) => ({
@@ -1103,6 +2220,7 @@ function libraryToGame(entry) {
         title: entry.title,
         artist: entry.publisher,
         copyright: entry.region === 'Famicom' ? 'Famicom' : 'NES',
+        cover: COVER_ART[entry.title] || null,
         colors: colorsFromTitle(entry.title),
         seed: hashString(entry.title),
         file: entry.file,
@@ -1121,7 +2239,8 @@ function shuffleArray(arr) {
     return a;
 }
 
-const GAMES = shuffleArray(NSF_LIBRARY).slice(0, LIBRARY_CARD_COUNT).map(libraryToGame);
+const COVER_LIBRARY = NSF_LIBRARY.filter(entry => COVER_ART[entry.title]);
+const GAMES = shuffleArray(COVER_LIBRARY).slice(0, LIBRARY_CARD_COUNT).map(libraryToGame);
 
 /* ═══════════════════════════════════════════════
    STATE
@@ -1136,6 +2255,7 @@ const state = {
     muted: false,
     elapsed: 0,
     playInterval: null,
+    isSwitchingGame: false,
 };
 
 /* ═══════════════════════════════════════════════
@@ -1146,6 +2266,10 @@ const $$ = s => document.querySelectorAll(s);
 
 const dom = {
     artCanvas:     $('#artCanvas'),
+    coverArt:      $('#coverArt'),
+    coverBackdrop: $('#coverBackdrop'),
+    ambientCover:  $('#ambientCover'),
+    nowTrack:      $('#nowTrack'),
     gameTitle:     $('#gameTitle'),
     artistName:    $('#artistName'),
     copyright:     $('#copyright'),
@@ -1172,6 +2296,20 @@ const dom = {
     fileInput:     $('#fileInput'),
     dropOverlay:   $('#dropOverlay'),
     visualizer:    $('#visualizer'),
+    miniTrack:     $('#miniTrack'),
+    miniGame:      $('#miniGame'),
+    miniArt:       $('#miniArt'),
+    miniCover:     $('#miniCover'),
+    heroPlayBtn:   $('#heroPlayBtn'),
+    heroPlayIcon:  $('#heroPlayIcon'),
+    heroPrevAlbumBtn: $('#heroPrevAlbumBtn'),
+    heroNextAlbumBtn: $('#heroNextAlbumBtn'),
+    heroShuffleBtn: $('#heroShuffleBtn'),
+    heroRepeatBtn:  $('#heroRepeatBtn'),
+    heroProgressTrack: $('#heroProgressTrack'),
+    heroProgressFill:  $('#heroProgressFill'),
+    heroElapsed:       $('#heroElapsed'),
+    heroDuration:      $('#heroDuration'),
 };
 
 /* ═══════════════════════════════════════════════
@@ -1240,7 +2378,7 @@ function vizTick() {
     const w = canvas.width;
     const h = canvas.height;
 
-    ctx.fillStyle = '#06060c';
+    ctx.fillStyle = '#0a0a0e';
     ctx.fillRect(0, 0, w, h);
 
     const barW = Math.floor(w / VIZ_BARS);
@@ -1271,7 +2409,8 @@ function vizTick() {
         } else if (state.isPlaying) {
             vizTargets[i] = 0.15 + Math.random() * 0.85;
         } else {
-            vizTargets[i] *= 0.94;
+            // Keep a quiet hardware-style floor visible while paused.
+            vizTargets[i] = 0.028 + (i % 4) * 0.007;
         }
         if (vizTargets[i] > vizHeights[i]) {
             vizHeights[i] += (vizTargets[i] - vizHeights[i]) * VIZ_ATTACK;
@@ -1306,7 +2445,7 @@ function vizTick() {
     }
 
     if (nsfChannelMode) {
-        ctx.font = '8px "Press Start 2P", monospace';
+        ctx.font = '700 8px "Space Mono", monospace';
         ctx.textBaseline = 'top';
 
         for (let i = 0; i < VIZ_CHANNELS.length; i++) {
@@ -1348,16 +2487,38 @@ function game()  { return GAMES[state.currentGame]; }
 function track() { return game().tracks[state.currentTrack]; }
 
 async function selectGame(idx) {
+    stop();
     state.currentGame = idx;
     state.currentTrack = 0;
     state.elapsed = 0;
-    stop();
     await ensureLoaded(idx);
     if (game().isNSF) engine.selectTrack(0);
     renderLibrary();
     renderTrackList();
     updateNowPlaying();
 }
+
+async function selectAdjacentGame(direction) {
+    if (state.isSwitchingGame || GAMES.length < 2) return;
+
+    const resumeAfterSwitch = state.isPlaying;
+    const target = (state.currentGame + direction + GAMES.length) % GAMES.length;
+    state.isSwitchingGame = true;
+    dom.heroPrevAlbumBtn.disabled = true;
+    dom.heroNextAlbumBtn.disabled = true;
+
+    try {
+        await selectGame(target);
+        if (resumeAfterSwitch) await play();
+    } finally {
+        state.isSwitchingGame = false;
+        dom.heroPrevAlbumBtn.disabled = false;
+        dom.heroNextAlbumBtn.disabled = false;
+    }
+}
+
+function previousGame() { return selectAdjacentGame(-1); }
+function nextGame() { return selectAdjacentGame(1); }
 
 async function selectTrack(idx) {
     state.currentTrack = idx;
@@ -1369,24 +2530,39 @@ async function selectTrack(idx) {
 }
 
 async function play() {
-    state.isPlaying = true;
-    dom.playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-    dom.albumWrap.classList.add('playing');
-    updateTrackActiveState();
-    if (!game().isNSF && game().file) {
-        const loaded = await ensureLoaded(state.currentGame);
-        if (loaded) {
+    try {
+        // Do this before the asynchronous NSF fetch. Safari and other mobile
+        // browsers only allow audio to unlock during the original tap gesture.
+        await engine.unlockAudio();
+
+        if (!game().isNSF && game().file) {
+            const loaded = await ensureLoaded(state.currentGame);
+            if (!loaded) throw new Error(`Unable to load ${game().file}`);
             engine.selectTrack(state.currentTrack);
             renderTrackList();
         }
+
+        if (!game().isNSF) throw new Error('No playable NSF is loaded');
+        await engine.play();
+    } catch (err) {
+        console.error('Playback could not start:', err);
+        pause();
+        return false;
     }
-    if (game().isNSF) engine.play();
+
+    state.isPlaying = true;
+    dom.playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    dom.heroPlayIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    dom.albumWrap.classList.add('playing');
+    updateTrackActiveState();
     startTimer();
+    return true;
 }
 
 function pause() {
     state.isPlaying = false;
     dom.playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    dom.heroPlayIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
     dom.albumWrap.classList.remove('playing');
     updateTrackActiveState();
     clearInterval(state.playInterval);
@@ -1470,6 +2646,7 @@ function startTimer() {
 function toggleShuffle() {
     state.shuffle = !state.shuffle;
     dom.shuffleBtn.classList.toggle('active', state.shuffle);
+    dom.heroShuffleBtn.classList.toggle('active', state.shuffle);
 }
 
 function cycleRepeat() {
@@ -1477,8 +2654,10 @@ function cycleRepeat() {
     const idx = (modes.indexOf(state.repeat) + 1) % modes.length;
     state.repeat = modes[idx];
     dom.repeatBtn.classList.toggle('active', state.repeat !== 'none');
+    dom.heroRepeatBtn.classList.toggle('active', state.repeat !== 'none');
     dom.repeatBtn.title = state.repeat === 'one' ? 'Repeat One'
         : state.repeat === 'all' ? 'Repeat All' : 'Repeat';
+    dom.heroRepeatBtn.title = dom.repeatBtn.title;
     // Show "1" indicator for repeat-one
     if (state.repeat === 'one') {
         dom.repeatBtn.style.setProperty('--repeat-label', '"1"');
@@ -1534,10 +2713,14 @@ function seekPreview(ratio) {
 function renderLibrary() {
     dom.libraryStrip.innerHTML = GAMES.map((g, i) => {
         const active = i === state.currentGame ? ' active' : '';
-        return `<div class="game-card${active}" data-game="${i}">
-            <div class="game-card-art"><canvas width="64" height="64" data-card="${i}"></canvas></div>
+        const pressed = i === state.currentGame ? 'true' : 'false';
+        const artwork = g.cover
+            ? `<div class="game-card-art has-cover" style="background-image:linear-gradient(rgba(8,8,11,.48),rgba(8,8,11,.48)),url('${g.cover}')"><img class="game-card-cover" src="${g.cover}" alt="" loading="lazy" decoding="async"></div>`
+            : `<div class="game-card-art"><canvas width="64" height="64" data-card="${i}"></canvas></div>`;
+        return `<button class="game-card${active}" data-game="${i}" type="button" aria-pressed="${pressed}">
+            ${artwork}
             <div class="game-card-title">${g.title}</div>
-        </div>`;
+        </button>`;
     }).join('');
 
     // Draw card art
@@ -1552,7 +2735,7 @@ function renderTrackList() {
     dom.trackList.innerHTML = g.tracks.map((t, i) => {
         const active = i === state.currentTrack ? ' active' : '';
         const playing = i === state.currentTrack && state.isPlaying ? ' is-playing' : '';
-        return `<div class="track-row${active}${playing}" data-track="${i}">
+        return `<button class="track-row${active}${playing}" data-track="${i}" type="button" aria-current="${active ? 'true' : 'false'}">
             <div class="track-num">${String(i + 1).padStart(2, '0')}</div>
             <div class="track-playing-icon">
                 <div class="eq-bar"></div><div class="eq-bar"></div>
@@ -1560,7 +2743,7 @@ function renderTrackList() {
             </div>
             <div class="track-name">${t.name}</div>
             <div class="track-time">${t.time}</div>
-        </div>`;
+        </button>`;
     }).join('');
 }
 
@@ -1574,14 +2757,48 @@ function updateTrackActiveState() {
 function updateNowPlaying() {
     const g = game();
     const t = track();
+    dom.nowTrack.textContent = t.name;
     dom.gameTitle.textContent = g.title;
     dom.artistName.textContent = g.artist;
     dom.copyright.textContent = g.copyright;
     dom.trackCounter.textContent = `TRACK ${state.currentTrack + 1} / ${g.tracks.length}`;
     dom.duration.textContent = t.time;
     dom.elapsed.textContent = formatTime(state.elapsed);
+    dom.heroDuration.textContent = t.time;
+    dom.heroElapsed.textContent = formatTime(state.elapsed);
+    dom.miniTrack.textContent = t.name;
+    dom.miniGame.textContent = g.title;
 
-    drawPixelArt(dom.artCanvas, g.colors, g.seed);
+    document.documentElement.style.setProperty('--art-primary', g.colors[1] || '#8b5cf6');
+    document.documentElement.style.setProperty('--art-secondary', g.colors[2] || g.colors[1] || '#ec4899');
+
+    if (g.cover) {
+        const coverImage = `url("${g.cover}")`;
+        dom.albumWrap.classList.add('has-cover');
+        dom.coverArt.hidden = false;
+        dom.coverArt.src = g.cover;
+        dom.coverArt.alt = `${g.title} cover art`;
+        dom.artCanvas.hidden = true;
+        dom.coverBackdrop.style.backgroundImage = coverImage;
+        dom.ambientCover.style.backgroundImage = coverImage;
+        dom.ambientCover.classList.add('visible');
+        dom.miniArt.classList.add('has-cover');
+        dom.miniCover.hidden = false;
+        dom.miniCover.src = g.cover;
+    } else {
+        dom.albumWrap.classList.remove('has-cover');
+        dom.coverArt.hidden = true;
+        dom.coverArt.removeAttribute('src');
+        dom.coverArt.alt = '';
+        dom.artCanvas.hidden = false;
+        dom.coverBackdrop.style.backgroundImage = '';
+        dom.ambientCover.style.backgroundImage = '';
+        dom.ambientCover.classList.remove('visible');
+        dom.miniArt.classList.remove('has-cover');
+        dom.miniCover.hidden = true;
+        dom.miniCover.removeAttribute('src');
+        drawPixelArt(dom.artCanvas, g.colors, g.seed);
+    }
     updateProgress();
 }
 
@@ -1589,20 +2806,36 @@ function updateProgress() {
     const dur = parseTime(track().time);
     const ratio = dur > 0 ? state.elapsed / dur : 0;
     dom.progressFill.style.width = (ratio * 100) + '%';
+    dom.heroProgressFill.style.width = (ratio * 100) + '%';
     dom.elapsed.textContent = formatTime(state.elapsed);
+    dom.heroElapsed.textContent = formatTime(state.elapsed);
 }
 
 /* ═══════════════════════════════════════════════
    EVENT LISTENERS
    ═══════════════════════════════════════════════ */
 dom.playBtn.addEventListener('click', togglePlay);
+dom.heroPlayBtn.addEventListener('click', togglePlay);
 dom.stopBtn.addEventListener('click', stop);
 dom.prevBtn.addEventListener('click', prevTrack);
+dom.heroPrevAlbumBtn.addEventListener('click', previousGame);
 dom.nextBtn.addEventListener('click', nextTrack);
+dom.heroNextAlbumBtn.addEventListener('click', nextGame);
 dom.shuffleBtn.addEventListener('click', toggleShuffle);
+dom.heroShuffleBtn.addEventListener('click', toggleShuffle);
 dom.repeatBtn.addEventListener('click', cycleRepeat);
+dom.heroRepeatBtn.addEventListener('click', cycleRepeat);
 dom.muteBtn.addEventListener('click', toggleMute);
 dom.loadBtn.addEventListener('click', () => dom.fileInput.click());
+
+// A stale or missing manifest entry falls back cleanly to generated art.
+dom.coverArt.addEventListener('error', () => {
+    const current = game();
+    if (!current || !current.cover) return;
+    current.cover = null;
+    renderLibrary();
+    updateNowPlaying();
+});
 
 dom.fileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -1660,31 +2893,29 @@ function addDragListeners(element, handler) {
     }, { passive: false });
 }
 
-// Progress bar seeking — preview during drag, seek on release
-let _progressDragRatio = -1;
+// Wire a seek surface with preview-on-drag and commit-on-release.
+function wireProgressDrag(el) {
+    let dragRatio = -1;
 
-function handleProgressPreview(e) {
-    const rect = dom.progressTrack.getBoundingClientRect();
-    _progressDragRatio = Math.max(0, Math.min(1, (getPointerX(e) - rect.left) / rect.width));
-    seekPreview(_progressDragRatio);
-}
+    const handlePreview = (e) => {
+        const rect = el.getBoundingClientRect();
+        dragRatio = Math.max(0, Math.min(1, (getPointerX(e) - rect.left) / rect.width));
+        seekPreview(dragRatio);
+    };
 
-function handleProgressCommit() {
-    if (_progressDragRatio >= 0) {
-        seek(_progressDragRatio);
-        _progressDragRatio = -1;
-    }
-}
+    const handleCommit = () => {
+        if (dragRatio >= 0) {
+            seek(dragRatio);
+            dragRatio = -1;
+        }
+    };
 
-// Wire progress drag with preview on move, seek on release
-(function() {
-    const el = dom.progressTrack;
     // Mouse
     el.addEventListener('mousedown', (e) => {
-        handleProgressPreview(e);
-        const onMove = (ev) => handleProgressPreview(ev);
+        handlePreview(e);
+        const onMove = (ev) => handlePreview(ev);
         const onUp = () => {
-            handleProgressCommit();
+            handleCommit();
             document.removeEventListener('mousemove', onMove);
             document.removeEventListener('mouseup', onUp);
         };
@@ -1694,10 +2925,10 @@ function handleProgressCommit() {
     // Touch
     el.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        handleProgressPreview(e);
-        const onMove = (ev) => { ev.preventDefault(); handleProgressPreview(ev); };
+        handlePreview(e);
+        const onMove = (ev) => { ev.preventDefault(); handlePreview(ev); };
         const onEnd = () => {
-            handleProgressCommit();
+            handleCommit();
             document.removeEventListener('touchmove', onMove);
             document.removeEventListener('touchend', onEnd);
             document.removeEventListener('touchcancel', onEnd);
@@ -1706,7 +2937,10 @@ function handleProgressCommit() {
         document.addEventListener('touchend', onEnd);
         document.addEventListener('touchcancel', onEnd);
     }, { passive: false });
-})();
+}
+
+wireProgressDrag(dom.progressTrack);
+wireProgressDrag(dom.heroProgressTrack);
 
 // Volume bar
 function handleVolumeInteraction(e) {
@@ -1763,10 +2997,8 @@ document.addEventListener('keydown', (e) => {
    ═══════════════════════════════════════════════ */
 function resizeVisualizer() {
     const canvas = dom.visualizer;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const w = parent.clientWidth;
-    const h = parent.clientHeight || 72;
+    const w = Math.max(1, Math.round(canvas.clientWidth));
+    const h = Math.max(1, Math.round(canvas.clientHeight || 72));
     if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;

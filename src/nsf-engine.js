@@ -232,6 +232,24 @@ class NSFEngine {
     }
 
     // ── Playback Controls ──
+    async unlockAudio() {
+        // Mobile browsers require AudioContext creation/resume to begin inside the
+        // original pointer gesture. Start initialization synchronously, before any
+        // NSF fetch can consume that gesture, then wait for the worklet to finish.
+        const initPromise = this.audioCtx ? null : this._initAudio();
+        const resumePromise = this.audioCtx?.state === 'suspended'
+            ? this.audioCtx.resume()
+            : Promise.resolve();
+
+        if (initPromise) await initPromise;
+        await resumePromise;
+
+        // Keep this fallback for browsers that initially defer resume().
+        if (this.audioCtx?.state === 'suspended') {
+            await this.audioCtx.resume();
+        }
+    }
+
     async play() {
         if (!this.nsf || !this.audioCtx) return;
 
