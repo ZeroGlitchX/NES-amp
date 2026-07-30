@@ -1,10 +1,7 @@
-# Soundtracks without matched cover art (248)
+# Soundtracks without matched cover art (244)
 # Format: region | title | NSF path
 # Add or identify a cover, then use the same lowercase kebab-case filename stem.
 
-Famicom | 1999 | NES-Gamemusic/Famicom/Coconuts_Japan/1999.nsf
-Famicom | After Burner II | NES-Gamemusic/Famicom/Sunsoft/After_Burner_II.nsf
-Famicom | Ai Senshi Nicol | NES-Gamemusic/Famicom/Konami/Ai_Senshi_Nicol.nsf
 Famicom | Akagawa Jirou no Yuurei Ressha | NES-Gamemusic/Famicom/Enix/Akagawa_Jirou_no_Yuurei_Ressha.nsf
 Famicom | Akai Yousai | NES-Gamemusic/Famicom/Konami/Akai_Yousai.nsf
 Famicom | Algos no Senshi | NES-Gamemusic/Famicom/Tecmo/Algos_no_Senshi.nsf

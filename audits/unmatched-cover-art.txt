@@ -1,4 +1,4 @@
-# Unmatched cover art (450)
+# Unmatched cover art (448)
 # These files are not referenced by src/cover-art.js.
 # Review before pruning; some may match obscure Famicom titles under alternate names.
 
@@ -22,7 +22,6 @@ images/nes_box_art/adventures-of-gilligan-s-island-the-usa.webp
 images/nes_box_art/adventures-of-rad-gravity-the-usa.webp
 images/nes_box_art/adventures-of-rocky-and-bullwinkle-the-usa.webp
 images/nes_box_art/adventures-of-tom-sawyer-usa.webp
-images/nes_box_art/afterburner-usa-tengen-unlicensed.webp
 images/nes_box_art/airwolf-usa.webp
 images/nes_box_art/al-unser-jr-turbo-racing-usa.webp
 images/nes_box_art/alien-syndrome-usa-tengen-unlicensed.webp
