@@ -29,9 +29,27 @@ const DMC_RATE_NTSC = [
     428,380,340,320,286,254,226,214,190,160,142,128,106,84,72,54
 ];
 
+const APU_VRC6_EXPANSION_MASK = 0x01;
+const VRC6_RAW_OUTPUT_MAX = 61;
+const VRC6_AUDIO_CLASS = typeof VRC6 !== 'undefined'
+    ? VRC6
+    : (typeof require === 'function' ? require('./vrc6.js').VRC6 : null);
+
 class APU {
-    constructor() {
+    constructor(options = {}) {
+        if (typeof options === 'number') options = { expansionChips: options };
+
         this.memory = null; // Set after construction (needed for DMC reads)
+        this.expansionChips = (options.expansionChips || 0) & 0xFF;
+        this.vrc6 = null;
+        if (this.expansionChips & APU_VRC6_EXPANSION_MASK) {
+            if (!VRC6_AUDIO_CLASS) {
+                throw new Error('VRC6 expansion requested before src/vrc6.js was loaded');
+            }
+            this.vrc6 = new VRC6_AUDIO_CLASS({
+                swapAddressLines: !!options.vrc6SwapAddressLines,
+            });
+        }
 
         // Pre-compute mixer lookup tables
         this.pulseTable = new Float32Array(31);
@@ -43,10 +61,18 @@ class APU {
             this.tndTable[n] = n === 0 ? 0 : 163.67 / (24329.0 / n + 100);
         }
 
+        // Treat one maximum VRC6 pulse as equivalent to one maximum native
+        // pulse, then normalize the worst-case combined range to [0, 1].
+        // This isolated baseline can be tuned later without touching chip logic.
+        this.vrc6LinearGain = this.pulseTable[15] / 15;
+        this.vrc6MixScale = 1 / (1 + VRC6_RAW_OUTPUT_MAX * this.vrc6LinearGain);
+
         this.reset();
     }
 
     reset() {
+        if (this.vrc6) this.vrc6.reset();
+
         // Frame counter
         this.fcMode = 0;         // 0 = 4-step, 1 = 5-step
         this.fcCycle = 0;        // Current cycle within frame
@@ -96,6 +122,12 @@ class APU {
             irqEnabled: false,
             irqFlag: false
         };
+    }
+
+    // ── Expansion Audio Register Writes ──
+    writeExpansionRegister(addr, value) {
+        if (!this.vrc6) return false;
+        return this.vrc6.writeRegister(addr, value);
     }
 
     _newPulse() {
@@ -313,6 +345,9 @@ class APU {
                 this._clockPulse(1);
                 this._clockNoise();
             }
+
+            // VRC6 timers run at the full CPU clock rate.
+            if (this.vrc6) this.vrc6.clock();
 
             if (accumulateMix) {
                 mixSum += this._mixOutput();
@@ -556,7 +591,13 @@ class APU {
         const p = this.pulseTable[this.pulse[0].output + this.pulse[1].output];
         const tndIdx = 3 * this.tri.output + 2 * this.noise.output + this.dmc.outputLevel;
         const t = this.tndTable[Math.min(tndIdx, 202)];
-        return p + t; // Native mixer range [0, ~1]
+        const nativeOutput = p + t;
+
+        // Preserve the native mix exactly when expansion audio is absent.
+        if (!this.vrc6) return nativeOutput;
+
+        const vrc6Output = this.vrc6.getOutput() * this.vrc6LinearGain;
+        return (nativeOutput + vrc6Output) * this.vrc6MixScale;
     }
 
     getOutput() {
@@ -566,6 +607,8 @@ class APU {
     // ── Fast-forward APU by N CPU cycles (frame counter events only) ──
     // Used by silence detection scanner — skips channel timer clocking
     fastForward(cpuCycles) {
+        // VRC6 has no frame-counter events. Its oscillator phase is skipped here,
+        // matching the existing native-channel behavior used by scanning/seeking.
         const T4 = [7458, 14914, 22372, 29830];
         const T5 = [7458, 14914, 22371, 29830, 37281];
         let remaining = cpuCycles;
@@ -621,17 +664,32 @@ class APU {
         if (this.dmc.bytesRemaining > 0 || !this.dmc.bufferEmpty) {
             return true;
         }
+        // Expansion audio
+        if (this.vrc6 && this.vrc6.isChannelActive()) {
+            return true;
+        }
         return false;
     }
 
     // ── Channel outputs for visualizer ──
     getChannelOutputs() {
+        const vrc6 = this.vrc6
+            ? this.vrc6.getChannelOutputs()
+            : { pulse1: 0, pulse2: 0, saw: 0 };
+
         return {
             pulse1:   this.pulse[0].output,
             pulse2:   this.pulse[1].output,
             triangle: this.tri.output,
             noise:    this.noise.output,
-            dmc:      this.dmc.outputLevel
+            dmc:      this.dmc.outputLevel,
+            vrc6Pulse1: vrc6.pulse1,
+            vrc6Pulse2: vrc6.pulse2,
+            vrc6Saw:    vrc6.saw,
         };
     }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { APU };
 }

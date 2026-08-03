@@ -2843,11 +2843,12 @@ button:focus-visible,
 </div>
 
 <!-- NSF Engine -->
-<script src="src/nsf-parser.js?v=20260729-2"></script>
-<script src="src/cpu6502.js?v=20260729-2"></script>
-<script src="src/apu.js?v=20260729-2"></script>
-<script src="src/memory.js?v=20260729-2"></script>
-<script src="src/nsf-engine.js?v=20260729-2"></script>
+<script src="src/nsf-parser.js?v=20260803-vrc6"></script>
+<script src="src/cpu6502.js?v=20260803-vrc6"></script>
+<script src="src/vrc6.js?v=20260803-vrc6"></script>
+<script src="src/apu.js?v=20260803-vrc6"></script>
+<script src="src/memory.js?v=20260803-vrc6"></script>
+<script src="src/nsf-engine.js?v=20260803-vrc6"></script>
 <script src="src/games-library.js?v=20260729-2"></script>
 <script src="src/cover-art.js?v=20260729-2"></script>
 
@@ -2924,7 +2925,7 @@ async function scanTrackDurations(game) {
 
     for (let t = 0; t < game.tracks.length; t++) {
         // Create isolated emulator instances
-        const scanApu = new APU();
+        const scanApu = new APU({ expansionChips: nsf.expansionChips });
         const scanMem = new Memory();
         scanMem.apu = scanApu;
         scanApu.memory = scanMem;
@@ -3391,6 +3392,13 @@ function vizTick(timestamp = 0) {
             Math.max(0, Math.min(1, ch.noise / 15)),
             Math.max(0, Math.min(1, ch.dmc / 127)),
         ];
+        if (ch.vrc6Enabled) {
+            channelLevels.push(
+                Math.max(0, Math.min(1, ch.vrc6Pulse1 / 15)),
+                Math.max(0, Math.min(1, ch.vrc6Pulse2 / 15)),
+                Math.max(0, Math.min(1, ch.vrc6Saw / 31))
+            );
+        }
     }
 
     for (let i = 0; i < VIZ_BARS; i++) {

@@ -108,6 +108,16 @@ class Memory {
         }
     }
 
+    _forwardExpansionWrite(addr, value) {
+        if (!this.apu || typeof this.apu.writeExpansionRegister !== 'function') {
+            return false;
+        }
+
+        // Expansion handlers must explicitly claim a write. Unclaimed writes
+        // continue to the normal memory behavior (ROM-area writes are ignored).
+        return this.apu.writeExpansionRegister(addr, value) === true;
+    }
+
     write(addr, value) {
         addr &= 0xFFFF;
         value &= 0xFF;
@@ -145,6 +155,14 @@ class Memory {
             return;
         }
 
-        // $8000-$FFFF: ROM writes ignored (unless FDS expansion — future)
+        // $8000-$FFFF: PRG ROM on reads, write-only expansion registers on writes.
+        // The configured audio system decides which exact addresses are active.
+        if (addr >= 0x8000 && this._forwardExpansionWrite(addr, value)) return;
+
+        // Remaining ROM-area writes are ignored (unless FDS expansion — future)
     }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { Memory };
 }

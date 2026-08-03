@@ -9,6 +9,28 @@ const CPU_FREQ_NTSC = 1789773;
 const CPU_CLOCK_TRIM = 0.995;
 const NES_MIX_CENTER = 0.5;
 const OUTPUT_HEADROOM = 0.85;
+const NSF_ENGINE_EXPANSION_API = typeof getNSFExpansionChips === 'function'
+    ? { NSF_EXPANSION_CHIPS, getNSFExpansionChips }
+    : require('./nsf-parser.js');
+const NSF_ENGINE_SUPPORTED_EXPANSION_CHIPS =
+    NSF_ENGINE_EXPANSION_API.NSF_EXPANSION_CHIPS.VRC6;
+
+function getNSFExpansionSupport(expansionChips) {
+    const requestedMask = expansionChips & 0xFF;
+    const supportedMask = requestedMask & NSF_ENGINE_SUPPORTED_EXPANSION_CHIPS;
+    const unsupportedMask = requestedMask & ~NSF_ENGINE_SUPPORTED_EXPANSION_CHIPS;
+
+    return {
+        requestedMask: requestedMask,
+        supportedMask: supportedMask,
+        unsupportedMask: unsupportedMask,
+        requested: NSF_ENGINE_EXPANSION_API.getNSFExpansionChips(requestedMask),
+        supported: NSF_ENGINE_EXPANSION_API.getNSFExpansionChips(supportedMask),
+        unsupported: NSF_ENGINE_EXPANSION_API.getNSFExpansionChips(unsupportedMask),
+        hasExpansionAudio: requestedMask !== 0,
+        isFullySupported: unsupportedMask === 0,
+    };
+}
 
 class NSFEngine {
     constructor() {
@@ -44,6 +66,9 @@ class NSFEngine {
         this.chTriangle = new Uint8Array(this.channelHistorySize);
         this.chNoise = new Uint8Array(this.channelHistorySize);
         this.chDmc = new Uint8Array(this.channelHistorySize);
+        this.chVrc6Pulse1 = new Uint8Array(this.channelHistorySize);
+        this.chVrc6Pulse2 = new Uint8Array(this.channelHistorySize);
+        this.chVrc6Saw = new Uint8Array(this.channelHistorySize);
 
         // Callbacks
         this.onStateChange = null;
@@ -57,7 +82,7 @@ class NSFEngine {
         this.nsf = parseNSF(arrayBuffer);
 
         // Create emulator components
-        this.apu = new APU();
+        this.apu = new APU({ expansionChips: this.nsf.expansionChips });
         this.memory = new Memory();
         this.memory.apu = this.apu;
         this.apu.memory = this.memory;
@@ -85,6 +110,7 @@ class NSFEngine {
             copyright: this.nsf.copyright,
             totalSongs: this.nsf.totalSongs,
             startingSong: this.nsf.startingSong,
+            expansionAudio: getNSFExpansionSupport(this.nsf.expansionChips),
         };
     }
 
@@ -227,6 +253,9 @@ class NSFEngine {
             this.chTriangle[idx] = ch.triangle;
             this.chNoise[idx] = ch.noise;
             this.chDmc[idx] = ch.dmc;
+            this.chVrc6Pulse1[idx] = ch.vrc6Pulse1;
+            this.chVrc6Pulse2[idx] = ch.vrc6Pulse2;
+            this.chVrc6Saw[idx] = ch.vrc6Saw;
             this.samplesGenerated++;
         }
     }
@@ -350,8 +379,19 @@ class NSFEngine {
     }
 
     getChannelOutputs() {
+        const vrc6Enabled = !!(this.apu && this.apu.vrc6);
         if (!this.apu || this.samplesGenerated === 0) {
-            return { pulse1: 0, pulse2: 0, triangle: 0, noise: 0, dmc: 0 };
+            return {
+                pulse1: 0,
+                pulse2: 0,
+                triangle: 0,
+                noise: 0,
+                dmc: 0,
+                vrc6Pulse1: 0,
+                vrc6Pulse2: 0,
+                vrc6Saw: 0,
+                vrc6Enabled: vrc6Enabled,
+            };
         }
 
         // Visuals should follow audible output, not the most recently emulated state.
@@ -367,7 +407,11 @@ class NSFEngine {
             pulse2: this.chPulse2[idx],
             triangle: this.chTriangle[idx],
             noise: this.chNoise[idx],
-            dmc: this.chDmc[idx]
+            dmc: this.chDmc[idx],
+            vrc6Pulse1: this.chVrc6Pulse1[idx],
+            vrc6Pulse2: this.chVrc6Pulse2[idx],
+            vrc6Saw: this.chVrc6Saw[idx],
+            vrc6Enabled: vrc6Enabled,
         };
     }
 
@@ -381,6 +425,7 @@ class NSFEngine {
             copyright: this.nsf.copyright,
             totalSongs: this.nsf.totalSongs,
             currentSong: this.currentSong,
+            expansionAudio: getNSFExpansionSupport(this.nsf.expansionChips),
         };
     }
 
@@ -435,4 +480,8 @@ class NSFEngine {
             this.scriptNode = null;
         }
     }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { NSFEngine, getNSFExpansionSupport };
 }

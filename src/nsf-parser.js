@@ -4,6 +4,49 @@
  */
 'use strict';
 
+const NSF_EXPANSION_CHIPS = Object.freeze({
+    VRC6:       0x01,
+    VRC7:       0x02,
+    FDS:        0x04,
+    MMC5:       0x08,
+    N163:       0x10,
+    SUNSOFT_5B: 0x20,
+    VT02_PLUS:  0x40,
+});
+
+const NSF_EXPANSION_CHIP_DEFINITIONS = Object.freeze([
+    Object.freeze({ id: 'vrc6',      name: 'VRC6',       mask: NSF_EXPANSION_CHIPS.VRC6 }),
+    Object.freeze({ id: 'vrc7',      name: 'VRC7',       mask: NSF_EXPANSION_CHIPS.VRC7 }),
+    Object.freeze({ id: 'fds',       name: 'FDS',        mask: NSF_EXPANSION_CHIPS.FDS }),
+    Object.freeze({ id: 'mmc5',      name: 'MMC5',       mask: NSF_EXPANSION_CHIPS.MMC5 }),
+    Object.freeze({ id: 'n163',      name: 'N163',       mask: NSF_EXPANSION_CHIPS.N163 }),
+    Object.freeze({ id: 'sunsoft5b', name: 'Sunsoft 5B', mask: NSF_EXPANSION_CHIPS.SUNSOFT_5B }),
+    Object.freeze({ id: 'vt02plus',  name: 'VT02+',      mask: NSF_EXPANSION_CHIPS.VT02_PLUS }),
+]);
+
+const NSF_KNOWN_EXPANSION_CHIP_MASK = NSF_EXPANSION_CHIP_DEFINITIONS.reduce(
+    (mask, chip) => mask | chip.mask,
+    0
+);
+
+function getNSFExpansionChips(flags) {
+    flags &= 0xFF;
+    const chips = NSF_EXPANSION_CHIP_DEFINITIONS
+        .filter(chip => (flags & chip.mask) !== 0)
+        .map(chip => ({ id: chip.id, name: chip.name, mask: chip.mask }));
+    const unknownMask = flags & ~NSF_KNOWN_EXPANSION_CHIP_MASK;
+
+    if (unknownMask !== 0) {
+        chips.push({
+            id: 'unknown',
+            name: `Unknown (0x${unknownMask.toString(16).padStart(2, '0').toUpperCase()})`,
+            mask: unknownMask,
+        });
+    }
+
+    return chips;
+}
+
 function parseNSF(arrayBuffer) {
     if (arrayBuffer.byteLength < 0x80) {
         throw new Error('File too small to be a valid NSF');
@@ -36,6 +79,7 @@ function parseNSF(arrayBuffer) {
     const hasBankswitching = bankswitch.some(b => b !== 0);
     const loadAddress = view.getUint16(0x08, true);
     const prgData = new Uint8Array(arrayBuffer, 0x80);
+    const expansionChips = bytes[0x7B];
 
     return {
         version:         bytes[0x05],
@@ -52,7 +96,17 @@ function parseNSF(arrayBuffer) {
         bankswitch:      bankswitch,
         hasBankswitching: hasBankswitching,
         ntscPalFlags:    bytes[0x7A],
-        expansionChips:  bytes[0x7B],
+        expansionChips:  expansionChips,
+        requestedExpansionChips: getNSFExpansionChips(expansionChips),
         prgData:         prgData,
+    };
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        NSF_EXPANSION_CHIPS,
+        NSF_EXPANSION_CHIP_DEFINITIONS,
+        getNSFExpansionChips,
+        parseNSF,
     };
 }

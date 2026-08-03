@@ -71,7 +71,7 @@ const NSF_LIBRARY = [
     { title: 'Jesus', publisher: 'King Records', region: 'Famicom', file: 'NES-Gamemusic/Famicom/King_Records/Jesus.nsf' },
     { title: 'Ai Senshi Nicol', publisher: 'Konami', region: 'Famicom', file: 'NES-Gamemusic/Famicom/Konami/Ai_Senshi_Nicol.nsf' },
     { title: 'Akai Yousai', publisher: 'Konami', region: 'Famicom', file: 'NES-Gamemusic/Famicom/Konami/Akai_Yousai.nsf' },
-    { title: 'Akumajou Densetsu', publisher: 'Konami', region: 'Famicom', file: 'NES-Gamemusic/Famicom/Konami/castlevania-iii.nsf' },
+    { title: 'Akumajou Densetsu', publisher: 'Konami', region: 'Famicom', file: 'NES-Gamemusic/Famicom/Konami/Akumajou_Densetsu.nsf' },
     { title: 'Almana no Kiseki', publisher: 'Konami', region: 'Famicom', file: 'NES-Gamemusic/Famicom/Konami/Almana_no_Kiseki.nsf' },
     { title: 'Antarctic Adventure', publisher: 'Konami', region: 'Famicom', file: 'NES-Gamemusic/Famicom/Konami/Antarctic_Adventure.nsf' },
     { title: 'Bio Miracle Boku tte Upa', publisher: 'Konami', region: 'Famicom', file: 'NES-Gamemusic/Famicom/Konami/Bio_Miracle_Boku_tte_Upa.nsf' },

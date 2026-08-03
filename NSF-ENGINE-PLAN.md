@@ -86,8 +86,9 @@ index.htm (UI)  ←→  nsf-engine.js (orchestrator)
 6. **index.htm integration** — replace mock data, connect controls
 
 ## Scope
-- **V1 (this plan):** Standard APU only (no expansion chips), NTSC only
-- **Future:** VRC6, VRC7, FDS, MMC5, N163, Sunsoft 5B expansion audio; PAL support; silence detection; NSFE metadata
+- **V1 (original plan):** Standard APU only, NTSC only
+- **Implemented since V1:** VRC6 expansion audio and silence detection
+- **Future:** VRC7, FDS, MMC5, N163, Sunsoft 5B expansion audio; PAL support; NSFE metadata
 
 ## Verification
 1. Load Super Mario Bros. NSF → verify metadata display (title, artist, 18 tracks)

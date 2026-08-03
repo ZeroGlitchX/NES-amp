@@ -6,7 +6,7 @@ const COVER_ART = Object.freeze({
     "1999": "images/nes_box_art/1999.webp",
     "Ai Senshi Nicol": "images/nes_box_art/ai-senshi-nicol.webp",
     "Star Force FC": "images/nes_box_art/star-force.webp",
-    "Akumajou Densetsu": "images/nes_box_art/castlevania-iii.webp",
+    "Akumajou Densetsu": "images/nes_box_art/akumajou-densetsu-jp.webp",
     "Gradius II": "images/nes_box_art/gradius-ii.webp",
     "After Burner II": "images/nes_box_art/afterburner-2.webp",
     "Parodius Da": "images/nes_box_art/parodius.webp",

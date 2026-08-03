@@ -637,3 +637,7 @@ class CPU6502 {
         cpu.opcodes[0xEB] = () => { cpu.cycles += 2; SBC(cpu._rd(imm())); };
     }
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { CPU6502 };
+}

@@ -10,6 +10,7 @@ A web-based NES chiptune music player that runs entirely in the browser. Loads `
 
 - **Full 6502 CPU emulation** — all 151 official opcodes + common unofficial ones
 - **Accurate NES APU** — 2 pulse channels, triangle, noise, DMC with proper frame counter timing
+- **VRC6 expansion audio** — 2 additional 16-step pulse channels and a sawtooth channel
 - **Complete 506-game discovery library** — searchable by game, publisher, system, or NSF filename and lazy-loaded on click
 - **Personalized discovery** — persistent favorites, play counts, recents, Most Played, and randomized “Expand Your Horizons” picks
 - **Mobile-first player** — single-screen playback with a slide-in Discover/Favorites/Most Played/Up Next library
@@ -18,7 +19,7 @@ A web-based NES chiptune music player that runs entirely in the browser. Loads `
 - **Silence detection** — automatically scans track durations by running the emulator non-realtime
 - **Improved output tone** — cycle-averaged sample generation + NES-inspired filter chain (HP 37Hz, HP 120Hz, LP 15kHz)
 - **Pitch tuning** — slight NTSC clock trim for better playback pitch/speed match
-- **Per-channel visualizer** — dedicated color lanes for Pulse 1, Pulse 2, Triangle, Noise, and DPCM
+- **Per-channel visualizer** — 5 native lanes, expanding to 8 latency-compensated lanes for VRC6 soundtracks
 - **A/V sync-compensated visualizer** — channel display is delayed by queued audio + device latency to align with audible output
 - **AudioWorklet pipeline** — low-latency audio with ScriptProcessor fallback
 - **Bankswitch support** — handles NSF files with bank-switched PRG ROM
@@ -32,6 +33,7 @@ src/
   cover-art.js         Maps soundtrack titles to confirmed local WebP cover art
   nsf-parser.js        Parses the 128-byte NSF header + PRG ROM data
   cpu6502.js           MOS 6502 CPU — registers, addressing modes, all opcodes
+  vrc6.js              Konami VRC6 — 2 pulse channels, sawtooth, frequency control
   apu.js               NES APU — pulse, triangle, noise, DMC, frame counter, mixer
   memory.js            NES memory bus — RAM, PRG ROM, bankswitching, APU register I/O
   nsf-engine.js        Ties CPU + APU + Memory together, drives Web Audio output
@@ -58,7 +60,7 @@ The unmatched pools are listed in:
 2. **Load** — PRG ROM data is loaded into the memory bus with optional 4KB bank mapping
 3. **Init** — The CPU calls the NSF init routine (`JSR initAddress`) with the track number in the A register
 4. **Play loop** — At ~60Hz, the CPU calls the play routine (`JSR playAddress`). Between calls, the CPU steps instruction-by-instruction while the APU is clocked cycle-by-cycle
-5. **Sample generation** — For each audio sample (~48kHz), the engine averages mixer output across CPU cycles and applies NES non-linear mixing tables
+5. **Sample generation** — For each audio sample (~48kHz), the engine averages mixer output across CPU cycles, applies the native NES non-linear mixer, and adds normalized linear VRC6 output when requested
 6. **Output** — Samples are posted to an AudioWorklet node (or ScriptProcessor fallback), then passed through the output filter chain
 7. **Visualizer sync** — Per-sample channel snapshots are stored and read back with latency compensation for tighter audio/visual alignment
 
@@ -78,6 +80,28 @@ Just place the directory in your HTML server root
 ```
 
 Open `http://localhost/nes-amp/` in a browser. Search or browse Discover to load an album, or drag & drop a `.nsf` file onto the player. On mobile, use **Browse** to open the slide-in library and track queue.
+
+## Tests
+
+Run the zero-dependency Node test suite from the project root:
+
+```bash
+node --test tests/*.test.js
+```
+
+The integration suite renders bundled native-APU and VRC6 NSF fixtures through
+the real parser, CPU, memory bus, APU, mixer, and channel-history pipeline.
+
+## Expansion audio compatibility
+
+VRC6 is enabled when bit 0 of the NSF expansion byte is set. The engine supports
+the canonical NSF registers at `$9000-$9003`, `$A000-$A002`, and
+`$B000-$B002`. The bundled Akumajou Densetsu, Esper Dream 2, and Madara rips
+have been verified to use canonical `x001`/`x002` ordering. An internal
+address-line swap option remains available for legacy noncanonical rips.
+
+Files requesting VRC7, FDS, MMC5, N163, Sunsoft 5B, or VT02+ audio are reported
+as partially or fully unsupported according to their expansion flags.
 
 ### Listening data
 
